@@ -83,7 +83,7 @@ export default async function handler(req, res) {
       console.error("notifyAdmin failed:", e);
     });
 
-    res.status(200).json({ extracted, verdict });
+    res.status(200).json({ version: "v3-battery", extracted, verdict });
   } catch (err) {
     console.error(err);
     res.status(502).json({ error: "diagnose_failed", message: String(err?.message || err) });
@@ -422,4 +422,4 @@ function evaluateQuote(d) {
     disclaimer:
       "この診断は価格確認の目安であり、契約すべきか・解約すべきかを判断するものではありません。屋根の下地状況や分電盤の容量など、現地を見ないと分からない点は含まれていません。蓄電池の相場基準値は公的統計ではなく、施工店の見積もり実績を集計した市場調査データの平均値です。",
   };
-} 
+}
