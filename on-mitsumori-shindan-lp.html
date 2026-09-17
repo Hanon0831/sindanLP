@@ -818,6 +818,7 @@
           <div class="submit-row">
             <button type="button" class="btn-submit" id="consultSubmitBtn">この内容で相談する</button>
           </div>
+          <div class="diag-error" id="consultError"></div>
         </div>
 
         <button type="button" class="diag-reset" id="resetBtn">別の見積書をもう一度診断する</button>
@@ -878,6 +879,7 @@
   const diagError = document.getElementById('diagError');
 
   let selectedFile = null;
+  let lastDiagnosis = null;
 
   fileInput.addEventListener('change', () => { if (fileInput.files.length) handleFile(fileInput.files[0]); });
   ['dragover','dragenter'].forEach(evt=>{
@@ -937,6 +939,7 @@
       });
       const json = await res.json();
       if(!res.ok) throw new Error(json.message || '診断に失敗しました。');
+      lastDiagnosis = { extracted: json.extracted, verdict: json.verdict };
       renderDiagResult(json.extracted, json.verdict);
     }catch(err){
       diagStatus.style.display = 'none';
@@ -1013,19 +1016,60 @@
     cf.scrollIntoView({behavior:'smooth', block:'center'});
   });
 
-  document.getElementById('consultSubmitBtn').addEventListener('click', () => {
-    // Front-end only placeholder — wire to a real destination (email/CRM) before going live.
-    diagResult.style.display = 'none';
-    document.getElementById('thanksMsg').style.display = 'block';
-    document.getElementById('thanksMsg').scrollIntoView({behavior:'smooth', block:'center'});
+  const consultSubmitBtn = document.getElementById('consultSubmitBtn');
+  consultSubmitBtn.addEventListener('click', async () => {
+    const name = document.getElementById('nameInput').value.trim();
+    const tel = document.getElementById('telInput').value.trim();
+    const email = document.getElementById('emailInput').value.trim();
+    const note = document.getElementById('noteInput').value.trim();
+
+    const consultError = document.getElementById('consultError');
+    consultError.style.display = 'none';
+
+    if(!name || !tel){
+      consultError.textContent = 'お名前と電話番号をご入力ください。';
+      consultError.style.display = 'block';
+      return;
+    }
+
+    const originalLabel = consultSubmitBtn.textContent;
+    consultSubmitBtn.disabled = true;
+    consultSubmitBtn.textContent = '送信しています…';
+
+    try{
+      const res = await fetch('/api/consult', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name, tel, email, note,
+          extracted: lastDiagnosis?.extracted || null,
+          verdict: lastDiagnosis?.verdict || null,
+        }),
+      });
+      const json = await res.json();
+      if(!res.ok) throw new Error(json.message || '送信に失敗しました。');
+
+      diagResult.style.display = 'none';
+      document.getElementById('thanksMsg').style.display = 'block';
+      document.getElementById('thanksMsg').scrollIntoView({behavior:'smooth', block:'center'});
+    }catch(err){
+      consultError.textContent = '送信に失敗しました。お手数ですが、時間をおいて再度お試しください。（' + err.message + '）';
+      consultError.style.display = 'block';
+      consultSubmitBtn.disabled = false;
+      consultSubmitBtn.textContent = originalLabel;
+    }
   });
 
   document.getElementById('resetBtn').addEventListener('click', () => {
     selectedFile = null;
+    lastDiagnosis = null;
     fileInput.value = '';
     fileList.innerHTML = '';
     submitBtn.disabled = true;
     document.getElementById('consultForm').style.display = 'none';
+    document.getElementById('consultError').style.display = 'none';
+    consultSubmitBtn.disabled = false;
+    consultSubmitBtn.textContent = 'この内容で相談する';
     diagResult.style.display = 'none';
     uploadStage.style.display = 'block';
   });
