@@ -77,10 +77,79 @@ export default async function handler(req, res) {
   try {
     const extracted = await extractQuoteData({ apiKey, mediaType, data });
     const verdict = evaluateQuote(extracted);
+
+    // 管理者への通知（未設定の場合は何もせずスキップ。失敗しても診断結果は返す）
+    await notifyAdmin({ extracted, verdict, mediaType, data }).catch((e) => {
+      console.error("notifyAdmin failed:", e);
+    });
+
     res.status(200).json({ extracted, verdict });
   } catch (err) {
     console.error(err);
     res.status(502).json({ error: "diagnose_failed", message: String(err?.message || err) });
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 管理者通知メール（Resend使用）
+// RESEND_API_KEY と ADMIN_NOTIFY_EMAIL が設定されていない場合は何もしない。
+// ---------------------------------------------------------------------------
+async function notifyAdmin({ extracted, verdict, mediaType, data }) {
+  const resendKey = process.env.RESEND_API_KEY;
+  const toEmail = process.env.ADMIN_NOTIFY_EMAIL;
+  if (!resendKey || !toEmail) return; // 未設定なら通知しない
+
+  const fromEmail = process.env.NOTIFY_FROM_EMAIL || "onboarding@resend.dev";
+
+  const verdictLabels = {
+    cheap: "相場より安い", within_range: "相場の範囲内", high: "相場より高め",
+    needs_check: "要確認", unknown: "内訳の確認が必要",
+  };
+
+  const solarLine = verdict.solarCheck?.applicable
+    ? `太陽光: ${verdictLabels[verdict.solarCheck.tier]}（${verdict.solarCheck.unitPrice ? Math.round(verdict.solarCheck.unitPrice/10000) + "万円/kW" : "内訳不明"}）`
+    : "太陽光: 対象外";
+  const batteryLine = verdict.batteryCheck?.applicable
+    ? `蓄電池: ${verdictLabels[verdict.batteryCheck.tier]}（${verdict.batteryCheck.unitPrice ? Math.round(verdict.batteryCheck.unitPrice/10000) + "万円/kWh" : "内訳不明"}）`
+    : "蓄電池: なし";
+
+  const html = `
+    <h2>見積書AI診断：新しい診断がありました</h2>
+    <p><b>${solarLine}</b><br><b>${batteryLine}</b></p>
+    <table cellpadding="6" style="border-collapse:collapse;font-family:sans-serif;font-size:14px;">
+      <tr><td>メーカー（太陽光）</td><td>${extracted.maker ?? "—"}</td></tr>
+      <tr><td>太陽光容量</td><td>${extracted.solar_capacity_kw ?? "—"} kW</td></tr>
+      <tr><td>蓄電池メーカー</td><td>${extracted.battery_maker ?? "—"}</td></tr>
+      <tr><td>蓄電池容量</td><td>${extracted.battery_capacity_kwh ?? "—"} kWh</td></tr>
+      <tr><td>見積総額</td><td>${extracted.total_price_yen ? "¥" + extracted.total_price_yen.toLocaleString() : "—"}</td></tr>
+      <tr><td>金利</td><td>${extracted.interest_rate_percent ?? "—"} %</td></tr>
+      <tr><td>値引き額</td><td>${extracted.discount_amount_yen ? "¥" + extracted.discount_amount_yen.toLocaleString() : "—"}</td></tr>
+    </table>
+    <p style="color:#888;font-size:12px;">送信日時: ${new Date().toLocaleString("ja-JP", { timeZone: "Asia/Tokyo" })}</p>
+    <p style="color:#888;font-size:12px;">見積書の原本（画像/PDF）を添付しています。</p>
+  `;
+
+  const extMap = { "image/jpeg": "jpg", "image/png": "png", "image/webp": "webp", "application/pdf": "pdf" };
+  const filename = `mitsumori.${extMap[mediaType] || "bin"}`;
+
+  const res = await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${resendKey}`,
+    },
+    body: JSON.stringify({
+      from: fromEmail,
+      to: [toEmail],
+      subject: `【見積書AI診断】新規アップロード（${verdictLabels[verdict.solarCheck?.tier] || ""}）`,
+      html,
+      attachments: [{ filename, content: data }],
+    }),
+  });
+
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`Resend API error (${res.status}): ${text}`);
   }
 }
 
@@ -125,7 +194,7 @@ async function extractQuoteData({ apiKey, mediaType, data }) {
 
 注意点（金額の切り分けが最も重要です）:
 - solar_related_subtotal_yen は、太陽光システム（パネル・パワコン・架台・太陽光の設置工事等）に対応する金額の小計です。蓄電池や他設備の金額を含めないでください。
-- battery_related_subtotal_yen は、蓄電池本体・蓄電池用の設置工事に対応する金額の小計です。太陽光や他設備の金額を含めないでください。
+- battery_related_subtotal_yen は、蓄電池本体・蓄電池用の設置工事に対応する金額の小計です。太陽光や他設備の金額を含めないでください。見積書が蓄電池単体（太陽光を含まない）の場合は、total_price_yen と同じ金額を設定してください。
 - 内訳から太陽光・蓄電池それぞれの金額を分離できない場合（「太陽光・蓄電池セット一式」のような1行のみの場合など）は、両方とも null にしてください。無理に按分しないでください。
 - 足場費・電気配線工事費など太陽光・蓄電池のどちらに属するか判別できない共通費用は、どちらの小計にも含めず、line_items にのみ記載してください。
 - has_other_equipment は、太陽光・蓄電池以外の設備（エコキュート、V2H、カーポート等）が見積もりに混在している場合に true にしてください。
@@ -236,7 +305,7 @@ function evaluateBattery(d) {
   }
 
   const kwh = d.battery_capacity_kwh;
-  const price = d.battery_related_subtotal_yen;
+  const price = d.battery_related_subtotal_yen ?? (!d.solar_capacity_kw && !d.has_other_equipment ? d.total_price_yen : null);
 
   const check = {
     applicable: true,
@@ -293,7 +362,7 @@ function evaluateQuote(d) {
     });
   }
 
-  if (d.has_battery && (!d.solar_related_subtotal_yen || !d.battery_related_subtotal_yen) && d.total_price_yen) {
+  if (d.solar_capacity_kw && d.has_battery && (!d.solar_related_subtotal_yen || !d.battery_related_subtotal_yen) && d.total_price_yen) {
     flags.push({
       level: "info",
       message: "太陽光と蓄電池の金額が内訳として分かれていなかったため、それぞれ単体では判定できませんでした。販売店に内訳（太陽光分／蓄電池分）を確認すると、より正確に比較できます。",
