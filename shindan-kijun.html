@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>診断の根拠｜見積書AI診断｜合同会社on</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Roboto+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#234863; --blue:#4A7A9B; --blue-pale:#E4EEF2;
+    --paper:#F6F8F7; --paper-card:#FFFFFF;
+    --ink:#2B363B; --ink-soft:#5B6B70;
+    --red:#D2503C; --red-dark:#B03D2C; --red-pale:#FBEFEC;
+    --green:#3F9270; --green-pale:#E1F1E8;
+    --amber:#8a6600; --amber-pale:#FBF3DE;
+    --line:#DDE5E4; --radius:14px; --radius-sm:10px;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:'Noto Sans JP',sans-serif;background:var(--paper);color:var(--ink);line-height:1.85;}
+  .wrap{max-width:720px;margin:0 auto;padding:0 20px;}
+  header{padding:20px 0;border-bottom:1px solid var(--line);background:var(--paper-card);}
+  header .wrap{display:flex;align-items:center;gap:10px;font-weight:700;color:var(--navy);}
+  header .seal{width:28px;height:28px;border-radius:50%;border:2px solid var(--red);color:var(--red);display:flex;align-items:center;justify-content:center;font-size:0.6rem;font-weight:700;transform:rotate(-8deg);}
+  header a.back{margin-left:auto;font-size:0.82rem;color:var(--ink-soft);text-decoration:none;}
+  header a.back:hover{text-decoration:underline;}
+
+  .hero{padding:44px 0 8px;}
+  .hero .eyebrow{font-family:'Roboto Mono',monospace;font-size:0.72rem;letter-spacing:0.1em;color:var(--blue);text-transform:uppercase;margin-bottom:14px;}
+  .hero h1{font-size:1.55rem;color:var(--navy);margin:0 0 12px;font-weight:900;line-height:1.5;}
+  .hero p{color:var(--ink-soft);font-size:0.92rem;margin:0;max-width:56ch;}
+
+  section{padding:32px 0;border-top:1px solid var(--line);}
+  section:first-of-type{border-top:none;}
+  h2{font-size:1.08rem;color:var(--navy);margin:0 0 14px;font-weight:900;}
+  h2 .num{font-family:'Roboto Mono',monospace;color:var(--red);margin-right:8px;}
+  p{color:var(--ink-soft);font-size:0.92rem;}
+
+  .rate-card{background:var(--paper-card);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px;margin-top:14px;}
+  .rate-card .rate-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+  .rate-card .rate-label{font-weight:700;color:var(--navy);font-size:0.94rem;}
+  .rate-card .rate-value{font-family:'Roboto Mono',monospace;font-weight:700;font-size:1.3rem;color:var(--ink);}
+  .rate-card .source-tag{display:inline-block;font-size:0.68rem;font-weight:700;padding:4px 10px;border-radius:999px;}
+  .source-official{background:var(--green-pale);color:var(--green);}
+  .source-market{background:var(--amber-pale);color:var(--amber);}
+  .rate-card p{margin:10px 0 0;font-size:0.84rem;}
+  .rate-card a{color:var(--blue);}
+
+  table.tier-table{width:100%;border-collapse:collapse;margin-top:16px;font-size:0.88rem;}
+  table.tier-table th{background:var(--blue-pale);color:var(--navy);font-weight:700;padding:10px 12px;text-align:left;}
+  table.tier-table td{padding:10px 12px;border-bottom:1px solid var(--line);color:var(--ink-soft);}
+  table.tier-table td.label{color:var(--ink);font-weight:700;}
+  .tier-dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:8px;}
+  .dot-cheap{background:var(--green);}
+  .dot-within{background:var(--blue);}
+  .dot-high{background:var(--amber);}
+  .dot-needs{background:var(--red);}
+
+  .check-list{margin-top:14px;}
+  .check-item{display:flex;gap:12px;align-items:flex-start;padding:12px 0;border-bottom:1px dashed var(--line);}
+  .check-item:last-child{border-bottom:none;}
+  .check-icon{flex:none;width:22px;height:22px;border-radius:50%;background:var(--amber-pale);color:var(--amber);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:0.75rem;margin-top:2px;}
+  .check-item h4{margin:0 0 4px;font-size:0.9rem;color:var(--ink);}
+  .check-item p{margin:0;font-size:0.84rem;}
+
+  .limit-list{margin-top:14px;}
+  .limit-item{display:flex;gap:12px;align-items:flex-start;padding:10px 0;}
+  .limit-item .dash{flex:none;color:var(--red);font-weight:900;margin-top:2px;}
+  .limit-item p{margin:0;font-size:0.88rem;color:var(--ink-soft);}
+
+  .note-box{margin-top:18px;background:var(--blue-pale);border-left:3px solid var(--blue);padding:14px 16px;border-radius:0 var(--radius-sm) var(--radius-sm) 0;font-size:0.86rem;color:var(--ink-soft);}
+
+  .cta{text-align:center;padding:44px 0;}
+  .btn{display:inline-block;background:var(--red);color:#fff;text-decoration:none;padding:16px 32px;border-radius:999px;font-weight:700;font-size:0.94rem;box-shadow:0 10px 22px -8px rgba(210,80,60,0.5);}
+
+  footer{padding:30px 0;text-align:center;font-size:0.74rem;color:var(--ink-soft);border-top:1px solid var(--line);}
+</style>
+</head>
+<body>
+
+<header><div class="wrap">
+  <span class="seal">査定</span>合同会社on ／ 見積書AI診断
+  <a class="back" href="index.html">← 診断ページに戻る</a>
+</div></header>
+
+<div class="wrap">
+  <div class="hero">
+    <div class="eyebrow">診断の根拠</div>
+    <h1>見積書AI診断は、何を基準に判定しているか</h1>
+    <p>当社が運営する診断ツールである以上、「自社に都合よく判定しているのでは」という疑いは当然あると思います。基準をすべて公開するので、おかしいと思ったらご自身で検証してください。</p>
+  </div>
+
+  <section>
+    <h2><span class="num">01</span>相場の基準値</h2>
+    <p>読み取った容量から「同じ容量なら相場でいくらか」を計算し、見積金額と比較しています。太陽光と蓄電池では、基準値の性格が異なります。</p>
+
+    <div class="rate-card">
+      <div class="rate-head">
+        <span class="rate-label">太陽光</span>
+        <span class="source-tag source-official">公的統計</span>
+      </div>
+      <div class="rate-value">28.9万円 / kW</div>
+      <p>経済産業省 調達価格等算定委員会「令和8年度以降の調達価格等に関する意見」（令和8年2月5日公表）より、2025年に新築で設置された住宅用太陽光の平均値（中央値29.4万円/kW）を使用しています。毎年公表内容が更新されるため、当社も年1回見直しています。<br>
+      出典: <a href="https://www.meti.go.jp/shingikai/santeii/pdf/20260205_1.pdf" target="_blank" rel="noopener">経済産業省の公表資料（PDF）</a></p>
+    </div>
+
+    <div class="rate-card">
+      <div class="rate-head">
+        <span class="rate-label">蓄電池</span>
+        <span class="source-tag source-market">市場調査データ</span>
+      </div>
+      <div class="rate-value">17.2万円 / kWh</div>
+      <p>蓄電池には太陽光のような公的統計がありません。施工店の見積もり実績を集計した複数の市場調査（平均容量12.25kWh・工事費込みで平均210.1万円という水準がほぼ一致して報告されています）を参考に設定した、当社独自の参考値です。容量帯によって適正な単価は変わり、小容量ほど割高、大容量ほど割安になる傾向があります。</p>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="num">02</span>5段階判定の境目</h2>
+    <p>読み取った金額を容量で割った単価が、相場基準値の何倍かで判定しています。境目の数字をそのまま公開します。</p>
+    <table class="tier-table">
+      <tr><th>判定</th><th>条件（相場平均に対する倍率）</th></tr>
+      <tr><td class="label"><span class="tier-dot dot-cheap"></span>相場より安い</td><td>0.7倍以下</td></tr>
+      <tr><td class="label"><span class="tier-dot dot-within"></span>相場の範囲内</td><td>0.7倍超〜1.2倍未満</td></tr>
+      <tr><td class="label"><span class="tier-dot dot-high"></span>相場より高め</td><td>1.2倍以上（平均を20%以上上回る）</td></tr>
+      <tr><td class="label"><span class="tier-dot dot-needs"></span>要確認</td><td>1.5倍以上（平均を50%以上上回る）</td></tr>
+    </table>
+    <p style="margin-top:14px;">「相場より安い」も判定に入れているのは、安ければ良いわけではないためです。極端に安い見積りは、工事内容・保証・補助金の条件のどこかが薄いことがあります。</p>
+    <p>太陽光・蓄電池どちらも、容量（kW／kWh）と金額の内訳（太陽光分・蓄電池分に分かれているか）が読み取れなかった場合は「内訳の確認が必要」と表示し、判定そのものを行いません。</p>
+  </section>
+
+  <section>
+    <h2><span class="num">03</span>そのほかに確認している項目</h2>
+    <p>金額の相場だけでなく、見積書の書き方そのものに引っかかる点があれば指摘しています。</p>
+    <div class="check-list">
+      <div class="check-item">
+        <div class="check-icon">!</div>
+        <div><h4>金利が年4.0%以上</h4><p>0円ソーラーやローン提案でよく見られる水準です。</p></div>
+      </div>
+      <div class="check-item">
+        <div class="check-icon">!</div>
+        <div><h4>値引き額が総額の25%以上</h4><p>値引き率ではなく、値引き後の最終総額を相場と比べて判断してください、という趣旨です。</p></div>
+      </div>
+      <div class="check-item">
+        <div class="check-icon">!</div>
+        <div><h4>kW・kWhの容量が書かれていない</h4><p>型番だけでは単価比較ができません。</p></div>
+      </div>
+      <div class="check-item">
+        <div class="check-icon">!</div>
+        <div><h4>保証年数の記載がない</h4><p>機器保証・工事保証の年数と範囲を確認してください。</p></div>
+      </div>
+      <div class="check-item">
+        <div class="check-icon">!</div>
+        <div><h4>足場設置費の記載がない</h4><p>後から別途請求になっていないか確認してください。</p></div>
+      </div>
+      <div class="check-item">
+        <div class="check-icon">!</div>
+        <div><h4>電力会社への申請・工事負担金の記載がない</h4><p>価格が相場内でも、ここが抜けていれば後から追加費用が発生することがあります。</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="num">04</span>この診断で分からないこと</h2>
+    <p>書面だけで判定している以上、限界があります。特にここは大事だと思うので、隠さず書きます。</p>
+    <div class="limit-list">
+      <div class="limit-item"><span class="dash">―</span><p>屋根の下地がパネルの荷重に耐えるかどうか</p></div>
+      <div class="limit-item"><span class="dash">―</span><p>雪がどこに落ちるか、隣家や車に当たらないか</p></div>
+      <div class="limit-item"><span class="dash">―</span><p>分電盤の容量を上げる必要があるか</p></div>
+      <div class="limit-item"><span class="dash">―</span><p>引込線や電力会社側の工事が必要かどうか</p></div>
+    </div>
+    <div class="note-box">これらは現地を見ないと分かりません。この診断は「書面でできる確認を先に済ませて、現地調査に進むための道具」だとお考えください。診断結果が良くても、現地条件が合っていなければ良い工事にはなりません。逆に「要確認」と出たからといって、即座に契約や解約を決めるためのものでもありません。</div>
+  </section>
+
+  <div class="cta">
+    <a class="btn" href="index.html">診断ページに戻る</a>
+  </div>
+</div>
+
+<footer>合同会社on ／ 神奈川県横浜市金沢区能見台通22-9 ネクサス能見台 ／ 電気工事店登録 神奈川県知事第20230036号</footer>
+
+</body>
+</html>
