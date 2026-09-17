@@ -173,6 +173,8 @@ async function extractQuoteData({ apiKey, mediaType, data }) {
   "discount_amount_yen": number|null,
   "mentions_scaffolding_fee": boolean,
   "scaffolding_fee_yen": number|null,
+  "solar_installation_fee_yen": number|null,
+  "battery_installation_fee_yen": number|null,
   "installation_fee_yen": number|null,
   "mentions_warranty": boolean,
   "warranty_years": number|null,
@@ -187,7 +189,7 @@ async function extractQuoteData({ apiKey, mediaType, data }) {
 - solar_maker は太陽光パネルのメーカー名のみ、battery_maker は蓄電池のメーカー名のみを入れてください。見積書に太陽光が含まれていない場合、solar_maker は必ず null にしてください（蓄電池のメーカー名を solar_maker に入れないでください）。逆も同様です。
 - solar_related_subtotal_yen は、太陽光システム（パネル・パワコン・架台・太陽光の設置工事等）に対応する金額の小計です。蓄電池や他設備の金額を含めないでください。
 - battery_related_subtotal_yen は、蓄電池本体・蓄電池用の設置工事に対応する金額の小計です。太陽光や他設備の金額を含めないでください。見積書が蓄電池単体（太陽光を含まない）の場合は、total_price_yen と同じ金額を設定してください。
-- installation_fee_yen は、設置工事費・電気配線工事費・据付工事費など「工事」に該当する項目の合計金額です。足場費は含めないでください（足場費は scaffolding_fee_yen に入れてください）。機器代・部材代・諸経費は含めないでください。工事費が機器代と分かれておらず特定できない場合は null にしてください。
+- 工事費は、太陽光分と蓄電池分に分けて抽出してください。solar_installation_fee_yen は太陽光の設置工事費・電気配線工事費など、battery_installation_fee_yen は蓄電池の設置工事費・据付工事費などの合計です。どちらに属するか判別できない共通の工事費は、どちらにも入れず installation_fee_yen にのみ入れてください。太陽光・蓄電池の区別なく「工事費一式」としか書かれていない場合も installation_fee_yen に入れてください。いずれも足場費は含めないでください（足場費は scaffolding_fee_yen）。機器代・部材代・諸経費は含めないでください。特定できない場合は null にしてください。
 - scaffolding_fee_yen は、足場設置費・足場代に該当する金額です。記載がなければ null にしてください。
 - 内訳から太陽光・蓄電池それぞれの金額を分離できない場合（「太陽光・蓄電池セット一式」のような1行のみの場合など）は、両方とも null にしてください。無理に按分しないでください。
 - 足場費・電気配線工事費など太陽光・蓄電池のどちらに属するか判別できない共通費用は、どちらの小計にも含めず、line_items にのみ記載してください。
@@ -321,32 +323,72 @@ function man(yen) {
 
 // ---------------------------------------------------------------------------
 // 工事費の妥当性チェック（総額の判定とは別枠）
+//
+// 基準（20万円前後）は「太陽光単体」「蓄電池単体」それぞれの工事費に対するものです。
+// 太陽光・蓄電池の両方がある見積書で工事費が分かれていない場合は、
+// 基準側を2設備分にして比較します。
 // ---------------------------------------------------------------------------
 function evaluateInstallFee(d) {
-  const fee = d.installation_fee_yen;
-  if (fee == null) {
+  const parts = [];
+  if (d.solar_installation_fee_yen != null) {
+    parts.push({ label: "太陽光の工事費", fee: d.solar_installation_fee_yen, units: 1 });
+  }
+  if (d.battery_installation_fee_yen != null) {
+    parts.push({ label: "蓄電池の工事費", fee: d.battery_installation_fee_yen, units: 1 });
+  }
+
+  // 設備ごとに分かれていない共通の工事費しかない場合
+  if (parts.length === 0 && d.installation_fee_yen != null) {
+    const hasSolar = !!d.solar_capacity_kw;
+    const units = hasSolar && d.has_battery ? 2 : 1;
+    parts.push({
+      label: units === 2 ? "工事費（太陽光・蓄電池まとめて）" : "工事費",
+      fee: d.installation_fee_yen,
+      units,
+    });
+  }
+
+  if (parts.length === 0) {
     return { applicable: false };
   }
 
-  const check = { applicable: true, feeYen: fee, tier: "ok", label: "妥当な水準", reason: "" };
+  const items = parts.map((p) => judgeFee(p, d));
+  // 一番厳しい判定を全体の見出しに使う
+  const rank = { ok: 0, high: 1, needs_check: 2 };
+  const worst = items.reduce((a, b) => (rank[b.tier] > rank[a.tier] ? b : a));
 
-  if (fee > INSTALL_FEE_RATE.highYen) {
-    check.tier = "needs_check";
-    check.label = "高い";
-    check.reason = `工事費が${man(fee)}万円です。一般的な水準（${man(INSTALL_FEE_RATE.typicalYen)}万円前後）を大きく上回っています。何にかかる費用なのか内訳を確認してください。`;
-  } else if (fee > INSTALL_FEE_RATE.watchYen) {
-    check.tier = "high";
-    check.label = "やや高め";
-    check.reason = `工事費が${man(fee)}万円です。一般的な水準（${man(INSTALL_FEE_RATE.typicalYen)}万円前後）より高めです。現場の条件によっては妥当な場合もあるので、内訳を確認してください。`;
+  return {
+    applicable: true,
+    tier: worst.tier,
+    label: worst.label,
+    items,
+    scaffoldingYen: d.scaffolding_fee_yen ?? null,
+    reason: items.map((i) => i.reason).join(" "),
+  };
+}
+
+function judgeFee(part, d) {
+  const base = INSTALL_FEE_RATE.typicalYen * part.units;
+  const watch = INSTALL_FEE_RATE.watchYen * part.units;
+  const high = INSTALL_FEE_RATE.highYen * part.units;
+
+  const item = { label: part.label, feeYen: part.fee, tier: "ok", statusLabel: "妥当な水準", reason: "" };
+
+  if (part.fee > high) {
+    item.tier = "needs_check";
+    item.statusLabel = "高い";
+    item.reason = `${part.label}が${man(part.fee)}万円です。一般的な水準（${man(base)}万円前後）を大きく上回っています。何にかかる費用なのか内訳を確認してください。`;
+  } else if (part.fee > watch) {
+    item.tier = "high";
+    item.statusLabel = "やや高め";
+    item.reason = `${part.label}が${man(part.fee)}万円です。一般的な水準（${man(base)}万円前後）より高めです。現場の条件によっては妥当な場合もあるので、内訳を確認してください。`;
   } else {
-    check.reason = `工事費は${man(fee)}万円で、一般的な水準（${man(INSTALL_FEE_RATE.typicalYen)}万円前後）に収まっています。`;
+    item.reason = `${part.label}は${man(part.fee)}万円で、一般的な水準（${man(base)}万円前後）に収まっています。`;
   }
 
-  if (d.scaffolding_fee_yen != null) {
-    check.reason += `（別途、足場費${man(d.scaffolding_fee_yen)}万円が計上されています）`;
-  }
-
-  return check;
+  item.label = part.label;
+  item.tierLabel = item.statusLabel;
+  return item;
 }
 
 function evaluateBattery(d) {
@@ -450,10 +492,13 @@ function evaluateQuote(d) {
   const summary = buildSummary(d, solarCheck, batteryCheck, flags);
   const installCheck = evaluateInstallFee(d);
 
-  if (installCheck.applicable && (installCheck.tier === "high" || installCheck.tier === "needs_check")) {
-    summary.points.unshift(installCheck.reason);
-    summary.headline = "この見積もりには、確認・交渉できる余地があります。";
-    summary.points = summary.points.slice(0, 4);
+  if (installCheck.applicable) {
+    const flagged = (installCheck.items || []).filter((i) => i.tier === "high" || i.tier === "needs_check");
+    if (flagged.length) {
+      summary.points.unshift(...flagged.map((i) => i.reason));
+      summary.headline = "この見積もりには、確認・交渉できる余地があります。";
+      summary.points = summary.points.slice(0, 4);
+    }
   }
 
   return {
