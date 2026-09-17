@@ -97,7 +97,14 @@ export default async function handler(req, res) {
 async function notifyAdmin({ extracted, verdict, mediaType, data }) {
   const resendKey = process.env.RESEND_API_KEY;
   const toEmail = process.env.ADMIN_NOTIFY_EMAIL;
-  if (!resendKey || !toEmail) return; // 未設定なら通知しない
+
+  console.log("notifyAdmin: RESEND_API_KEY =", resendKey ? "設定あり" : "未設定",
+              "/ ADMIN_NOTIFY_EMAIL =", toEmail ? `設定あり(${toEmail})` : "未設定");
+
+  if (!resendKey || !toEmail) {
+    console.log("notifyAdmin: 環境変数が不足しているため通知をスキップしました。");
+    return;
+  }
 
   const fromEmail = process.env.NOTIFY_FROM_EMAIL || "onboarding@resend.dev";
 
@@ -151,6 +158,7 @@ async function notifyAdmin({ extracted, verdict, mediaType, data }) {
     const text = await res.text();
     throw new Error(`Resend API error (${res.status}): ${text}`);
   }
+  console.log("notifyAdmin: 通知メールを送信しました →", toEmail);
 }
 
 // ---------------------------------------------------------------------------
@@ -170,7 +178,7 @@ async function extractQuoteData({ apiKey, mediaType, data }) {
 
 スキーマ:
 {
-  "maker": string|null,
+  "solar_maker": string|null,
   "solar_capacity_kw": number|null,
   "solar_related_subtotal_yen": number|null,
   "battery_maker": string|null,
@@ -193,6 +201,7 @@ async function extractQuoteData({ apiKey, mediaType, data }) {
 }
 
 注意点（金額の切り分けが最も重要です）:
+- solar_maker は太陽光パネルのメーカー名のみ、battery_maker は蓄電池のメーカー名のみを入れてください。見積書に太陽光が含まれていない場合、solar_maker は必ず null にしてください（蓄電池のメーカー名を solar_maker に入れないでください）。逆も同様です。
 - solar_related_subtotal_yen は、太陽光システム（パネル・パワコン・架台・太陽光の設置工事等）に対応する金額の小計です。蓄電池や他設備の金額を含めないでください。
 - battery_related_subtotal_yen は、蓄電池本体・蓄電池用の設置工事に対応する金額の小計です。太陽光や他設備の金額を含めないでください。見積書が蓄電池単体（太陽光を含まない）の場合は、total_price_yen と同じ金額を設定してください。
 - 内訳から太陽光・蓄電池それぞれの金額を分離できない場合（「太陽光・蓄電池セット一式」のような1行のみの場合など）は、両方とも null にしてください。無理に按分しないでください。
@@ -256,6 +265,11 @@ function tierFromRatio(ratio) {
 }
 
 function evaluateSolar(d) {
+  // 太陽光がまったく含まれない見積書（蓄電池単体など）では太陽光の判定自体を行わない
+  if (!d.solar_capacity_kw && !d.solar_related_subtotal_yen && d.has_battery) {
+    return { applicable: false };
+  }
+
   const kw = d.solar_capacity_kw;
   const price = d.solar_related_subtotal_yen ?? (!d.has_battery && !d.has_other_equipment ? d.total_price_yen : null);
 
@@ -385,7 +399,7 @@ function evaluateQuote(d) {
       });
     }
   }
-  if (!d.solar_capacity_kw) {
+  if (!d.solar_capacity_kw && !d.has_battery) {
     flags.push({ level: "warn", message: "太陽光の容量（kW）が見積書に明記されていません。型番だけでは単価比較ができないため、販売店に確認してください。" });
   }
   if (d.has_battery && !d.battery_capacity_kwh) {
