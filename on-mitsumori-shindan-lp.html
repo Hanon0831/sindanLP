@@ -464,6 +464,21 @@
   .verdict-reason{font-size:0.82rem;color:var(--ink-soft);margin-top:8px;}
   .verdict-source{font-size:0.68rem;color:var(--ink-soft);margin-top:8px;opacity:0.85;}
   .verdict-source.unofficial{color:var(--amber);}
+  .verdict-model{font-size:0.7rem;color:var(--navy);font-weight:700;margin-top:8px;}
+  .verdict-note{font-size:0.74rem;color:var(--ink-soft);margin-top:8px;text-align:left;background:var(--paper-card);border-radius:var(--radius-sm);padding:9px 11px;}
+  .install-check{display:none;margin-top:12px;border-radius:var(--radius-sm);padding:12px 16px;font-size:0.84rem;border:1px solid var(--line);background:var(--paper);}
+  .install-check .install-label{display:block;font-weight:700;margin-bottom:4px;}
+  .install-check .install-reason{color:var(--ink-soft);}
+  .install-ok{border-color:var(--green);background:var(--green-pale);}
+  .install-ok .install-label{color:var(--green);}
+  .install-high{border-color:#E9D48F;background:var(--amber-pale);}
+  .install-high .install-label{color:var(--amber);}
+  .install-needs_check{border-color:var(--red);background:var(--red-pale);}
+  .install-needs_check .install-label{color:var(--red-dark);}
+  .diag-summary{display:none;margin-top:20px;background:var(--red-pale);border:1px solid var(--red);border-radius:var(--radius);padding:18px 20px;}
+  .diag-summary h4{margin:0;font-size:0.98rem;color:var(--red-dark);}
+  .diag-summary ul{margin:12px 0 0;padding-left:20px;}
+  .diag-summary li{font-size:0.86rem;color:var(--ink);margin-bottom:6px;line-height:1.7;}
   @media(max-width:520px){.verdict-panels.two{grid-template-columns:1fr;}}
 
   .spec-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:20px;}
@@ -782,6 +797,9 @@
 
       <div class="diag-result" id="diagResult">
         <div class="verdict-panels" id="verdictPanels"></div>
+        <div class="install-check" id="installCheck"></div>
+
+        <div class="diag-summary" id="diagSummary"></div>
 
         <div class="spec-grid" id="specGrid"></div>
 
@@ -955,20 +973,28 @@
 
   function buildVerdictPanel(label, unitLabel, check){
     if(!check || !check.applicable) return '';
-    const badgeText = verdictLabels[check.tier] || '内訳の確認が必要';
+    const badgeText = check.label || verdictLabels[check.tier] || '内訳の確認が必要';
     const priceText = check.unitPrice
-      ? `約${Math.round(check.unitPrice/10000)}万円/${unitLabel}（相場平均の${check.ratio}倍）`
+      ? `約${(Math.round(check.unitPrice/1000)/10)}万円/${unitLabel}`
       : '';
-    const sourceText = check.isOfficial
-      ? `出典: ${check.source}`
-      : `※公的統計ではなく市場調査データです（出典: ${check.source}）`;
+    const modelText = check.modelName
+      ? `<div class="verdict-model">判定基準：${check.modelName}</div>`
+      : '';
+    const noteText = check.modelNote
+      ? `<div class="verdict-note">${check.modelNote}</div>`
+      : '';
+    const sourceText = check.modelName
+      ? '※機種ごとの市場価格帯をもとにした参考値です'
+      : (check.isOfficial ? `出典: ${check.source}` : `※公的統計ではなく市場調査データです（出典: ${check.source}）`);
     return `
       <div class="verdict-panel">
         <div class="panel-label">${label}</div>
         <div class="verdict-badge verdict-${check.tier}">${badgeText}</div>
         <div class="verdict-price">${priceText}</div>
+        ${modelText}
         <div class="verdict-reason">${check.reason}</div>
-        <div class="verdict-source${check.isOfficial ? '' : ' unofficial'}">${sourceText}</div>
+        ${noteText}
+        <div class="verdict-source${check.isOfficial && !check.modelName ? '' : ' unofficial'}">${sourceText}</div>
       </div>`;
   }
 
@@ -984,7 +1010,30 @@
     panelsEl.innerHTML = panels.join('');
     panelsEl.className = 'verdict-panels' + (panels.length > 1 ? ' two' : '');
 
+    const installEl = document.getElementById('installCheck');
+    if(verdict.installCheck?.applicable){
+      installEl.className = 'install-check install-' + verdict.installCheck.tier;
+      installEl.innerHTML =
+        `<span class="install-label">工事費：${verdict.installCheck.label}</span>` +
+        `<span class="install-reason">${verdict.installCheck.reason}</span>`;
+      installEl.style.display = 'block';
+    } else {
+      installEl.style.display = 'none';
+    }
+
     document.getElementById('diagDisclaimer').textContent = verdict.disclaimer;
+
+    const summaryEl = document.getElementById('diagSummary');
+    if(verdict.summary){
+      const pts = (verdict.summary.points || [])
+        .map(p => `<li>${p}</li>`).join('');
+      summaryEl.innerHTML = `
+        <h4>${verdict.summary.headline}</h4>
+        ${pts ? `<ul>${pts}</ul>` : ''}`;
+      summaryEl.style.display = 'block';
+    } else {
+      summaryEl.style.display = 'none';
+    }
 
     const specs = [
       ['太陽光メーカー', extracted.solar_maker || (extracted.solar_capacity_kw ? '—' : 'なし')],
