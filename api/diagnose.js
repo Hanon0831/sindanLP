@@ -8,6 +8,17 @@
 // (Set this in the Vercel project's Settings > Environment Variables.
 //  Never expose it to the frontend — this file only runs server-side.)
 
+import {
+  SOLAR_MODELS,
+  BATTERY_MODELS,
+  SOLAR_CAPACITY_TIERS,
+  BATTERY_CAPACITY_TIERS,
+  INSTALL_FEE_RATE,
+  findModel,
+  findCapacityTier,
+  resolveRange,
+} from "./product-rates.js";
+
 export const config = {
   api: {
     bodyParser: {
@@ -16,38 +27,7 @@ export const config = {
   },
 };
 
-// ---------------------------------------------------------------------------
-// 太陽光の相場基準値（経済産業省 調達価格等算定委員会「令和8年度以降の調達価格等に
-// 関する意見」令和8年2月5日 より）
-// 出典: https://www.meti.go.jp/shingikai/santeii/pdf/20260205_1.pdf
-// 数値は年度ごとに公表内容が更新されるため、年1回は見直してください。
-// ---------------------------------------------------------------------------
-const SOLAR_MARKET_RATE = {
-  avgYenPerKw: 289000, // 2025年に新築で設置された案件の平均（中央値29.4万円/kW）
-  source: "経済産業省 調達価格等算定委員会（令和8年2月5日公表）",
-  isOfficial: true,
-};
-
-// ---------------------------------------------------------------------------
-// 蓄電池の相場基準値
-// 太陽光と違い、蓄電池には調達価格等算定委員会のような公的統計がありません。
-// 複数の業界調査（施工店の見積もり実績集計）で平均容量12.25kWh・工事費込み
-// 210.1万円＝約17.2万円/kWhという水準がほぼ一致して報告されており、これを
-// 初期値にしています。容量帯によって単価は変動します（小容量ほど割高、
-// 大容量ほど割安の傾向）。
-// この基準値は「公的データではなく市場調査に基づく参考値」であることを
-// 診断結果にも明記してください（消さないこと）。
-// ---------------------------------------------------------------------------
-const BATTERY_MARKET_RATE = {
-  avgYenPerKwh: 172000, // 平均12.25kWh・工事費込み210.1万円の実績平均
-  source: "業界調査データの平均値（施工店の見積もり実績集計。公的統計ではありません）",
-  isOfficial: false,
-};
-
 const THRESHOLDS = {
-  cheapRatio: 0.7, // これ以下は「相場より安い」
-  highRatio: 1.2, // これ以上は「相場より高め」
-  needsCheckRatio: 1.5, // これ以上は「要確認」
   highInterestRatePercent: 4.0, // これ以上の金利は注意
   highDiscountRatioOfTotal: 0.25, // 総額の25%以上の値引きは注意
 };
@@ -183,6 +163,7 @@ async function extractQuoteData({ apiKey, mediaType, data }) {
   "solar_related_subtotal_yen": number|null,
   "battery_maker": string|null,
   "battery_capacity_kwh": number|null,
+  "load_type": "全負荷"|"特定負荷"|null,
   "battery_related_subtotal_yen": number|null,
   "total_price_yen": number|null,
   "has_battery": boolean,
@@ -191,6 +172,8 @@ async function extractQuoteData({ apiKey, mediaType, data }) {
   "interest_rate_percent": number|null,
   "discount_amount_yen": number|null,
   "mentions_scaffolding_fee": boolean,
+  "scaffolding_fee_yen": number|null,
+  "installation_fee_yen": number|null,
   "mentions_warranty": boolean,
   "warranty_years": number|null,
   "mentions_grid_connection_fee": boolean,
@@ -204,6 +187,8 @@ async function extractQuoteData({ apiKey, mediaType, data }) {
 - solar_maker は太陽光パネルのメーカー名のみ、battery_maker は蓄電池のメーカー名のみを入れてください。見積書に太陽光が含まれていない場合、solar_maker は必ず null にしてください（蓄電池のメーカー名を solar_maker に入れないでください）。逆も同様です。
 - solar_related_subtotal_yen は、太陽光システム（パネル・パワコン・架台・太陽光の設置工事等）に対応する金額の小計です。蓄電池や他設備の金額を含めないでください。
 - battery_related_subtotal_yen は、蓄電池本体・蓄電池用の設置工事に対応する金額の小計です。太陽光や他設備の金額を含めないでください。見積書が蓄電池単体（太陽光を含まない）の場合は、total_price_yen と同じ金額を設定してください。
+- installation_fee_yen は、設置工事費・電気配線工事費・据付工事費など「工事」に該当する項目の合計金額です。足場費は含めないでください（足場費は scaffolding_fee_yen に入れてください）。機器代・部材代・諸経費は含めないでください。工事費が機器代と分かれておらず特定できない場合は null にしてください。
+- scaffolding_fee_yen は、足場設置費・足場代に該当する金額です。記載がなければ null にしてください。
 - 内訳から太陽光・蓄電池それぞれの金額を分離できない場合（「太陽光・蓄電池セット一式」のような1行のみの場合など）は、両方とも null にしてください。無理に按分しないでください。
 - 足場費・電気配線工事費など太陽光・蓄電池のどちらに属するか判別できない共通費用は、どちらの小計にも含めず、line_items にのみ記載してください。
 - has_other_equipment は、太陽光・蓄電池以外の設備（エコキュート、V2H、カーポート等）が見積もりに混在している場合に true にしてください。
@@ -257,11 +242,38 @@ async function extractQuoteData({ apiKey, mediaType, data }) {
 // ---------------------------------------------------------------------------
 // Step 2: ルールベースで判定する（太陽光・蓄電池それぞれの相場比較＋確認項目）
 // ---------------------------------------------------------------------------
-function tierFromRatio(ratio) {
-  if (ratio <= THRESHOLDS.cheapRatio) return { tier: "cheap", label: "相場より安い" };
-  if (ratio < THRESHOLDS.highRatio) return { tier: "within_range", label: "相場の範囲内" };
-  if (ratio < THRESHOLDS.needsCheckRatio) return { tier: "high", label: "相場より高め" };
-  return { tier: "needs_check", label: "要確認" };
+// ---------------------------------------------------------------------------
+// レンジに対する判定（太陽光・蓄電池共通）
+// ---------------------------------------------------------------------------
+function judgeAgainstRange(check, unitPrice, range, modelName, unitLabel) {
+  const scope = modelName ? `${modelName}・${range.tierLabel}` : `${range.tierLabel}`;
+  const rangeText = `${man(range.min)}〜${man(range.max)}万円/${unitLabel}`;
+
+  check.ratio = Math.round((unitPrice / ((range.min + range.max) / 2)) * 100) / 100;
+  check.benchmark = Math.round((range.min + range.max) / 2);
+  check.rangeMin = range.min;
+  check.rangeMax = range.max;
+  check.tierLabel = range.tierLabel;
+
+  if (unitPrice < range.min) {
+    check.tier = "cheap";
+    check.label = "相場より安い";
+    check.reason = `${scope}の一般的な価格帯（${rangeText}）を下回っています。安さの理由（工事範囲・保証年数・機器構成）も確認してください。`;
+  } else if (unitPrice <= range.max) {
+    const pos = (unitPrice - range.min) / (range.max - range.min);
+    check.tier = "within_range";
+    check.label = pos >= 0.7 ? "価格帯の上限寄り" : "相場の範囲内";
+    check.reason =
+      pos >= 0.7
+        ? `${scope}の価格帯（${rangeText}）の中では上限寄りです。同じ条件でも、これより下の水準の事例があります。`
+        : `${scope}の一般的な価格帯（${rangeText}）に収まっています。`;
+  } else {
+    const over = unitPrice / range.max;
+    check.tier = over >= 1.25 ? "needs_check" : "high";
+    check.label = over >= 1.25 ? "要確認" : "相場より高め";
+    check.reason = `${scope}の一般的な価格帯（${rangeText}）の上限を超えています。内訳の確認をおすすめします。`;
+  }
+  return check;
 }
 
 function evaluateSolar(d) {
@@ -272,6 +284,7 @@ function evaluateSolar(d) {
 
   const kw = d.solar_capacity_kw;
   const price = d.solar_related_subtotal_yen ?? (!d.has_battery && !d.has_other_equipment ? d.total_price_yen : null);
+  const model = findModel(SOLAR_MODELS, d.solar_maker, ...(d.line_items || []).map((i) => i.name));
 
   const check = {
     applicable: true,
@@ -279,10 +292,9 @@ function evaluateSolar(d) {
     label: "内訳の確認が必要",
     ratio: null,
     unitPrice: null,
-    benchmark: SOLAR_MARKET_RATE.avgYenPerKw,
     benchmarkUnit: "円/kW",
-    source: SOLAR_MARKET_RATE.source,
-    isOfficial: SOLAR_MARKET_RATE.isOfficial,
+    modelName: model?.name ?? null,
+    modelNote: model?.note ?? null,
     reason: "",
   };
 
@@ -296,19 +308,43 @@ function evaluateSolar(d) {
   }
 
   const unitPrice = Math.round(price / kw);
-  const ratio = Math.round((unitPrice / SOLAR_MARKET_RATE.avgYenPerKw) * 100) / 100;
-  const { tier, label } = tierFromRatio(ratio);
-
   check.unitPrice = unitPrice;
-  check.ratio = ratio;
-  check.tier = tier;
-  check.label = label;
-  check.reason = {
-    cheap: "kW単価が相場平均の0.7倍以下です。安さの理由（工事内容・保証・補助金対応）も確認してください。",
-    within_range: "kW単価は相場平均から大きく外れていません。",
-    high: "kW単価が相場平均を20%以上上回っています。",
-    needs_check: "kW単価が相場平均を50%以上上回っています。内訳を確認することを強くおすすめします。",
-  }[tier];
+
+  const range = resolveRange(findCapacityTier(SOLAR_CAPACITY_TIERS, kw, "maxKw"), model);
+  return judgeAgainstRange(check, unitPrice, range, model?.name, "kW");
+}
+
+// 円 → 万円（小数1桁）に整形
+function man(yen) {
+  return Math.round(yen / 1000) / 10;
+}
+
+// ---------------------------------------------------------------------------
+// 工事費の妥当性チェック（総額の判定とは別枠）
+// ---------------------------------------------------------------------------
+function evaluateInstallFee(d) {
+  const fee = d.installation_fee_yen;
+  if (fee == null) {
+    return { applicable: false };
+  }
+
+  const check = { applicable: true, feeYen: fee, tier: "ok", label: "妥当な水準", reason: "" };
+
+  if (fee > INSTALL_FEE_RATE.highYen) {
+    check.tier = "needs_check";
+    check.label = "高い";
+    check.reason = `工事費が${man(fee)}万円です。一般的な水準（${man(INSTALL_FEE_RATE.typicalYen)}万円前後）を大きく上回っています。何にかかる費用なのか内訳を確認してください。`;
+  } else if (fee > INSTALL_FEE_RATE.watchYen) {
+    check.tier = "high";
+    check.label = "やや高め";
+    check.reason = `工事費が${man(fee)}万円です。一般的な水準（${man(INSTALL_FEE_RATE.typicalYen)}万円前後）より高めです。現場の条件によっては妥当な場合もあるので、内訳を確認してください。`;
+  } else {
+    check.reason = `工事費は${man(fee)}万円で、一般的な水準（${man(INSTALL_FEE_RATE.typicalYen)}万円前後）に収まっています。`;
+  }
+
+  if (d.scaffolding_fee_yen != null) {
+    check.reason += `（別途、足場費${man(d.scaffolding_fee_yen)}万円が計上されています）`;
+  }
 
   return check;
 }
@@ -320,6 +356,7 @@ function evaluateBattery(d) {
 
   const kwh = d.battery_capacity_kwh;
   const price = d.battery_related_subtotal_yen ?? (!d.solar_capacity_kw && !d.has_other_equipment ? d.total_price_yen : null);
+  const model = findModel(BATTERY_MODELS, d.battery_maker, ...(d.line_items || []).map((i) => i.name));
 
   const check = {
     applicable: true,
@@ -327,10 +364,9 @@ function evaluateBattery(d) {
     label: "内訳の確認が必要",
     ratio: null,
     unitPrice: null,
-    benchmark: BATTERY_MARKET_RATE.avgYenPerKwh,
     benchmarkUnit: "円/kWh",
-    source: BATTERY_MARKET_RATE.source,
-    isOfficial: BATTERY_MARKET_RATE.isOfficial,
+    modelName: model?.name ?? null,
+    modelNote: model?.note ?? null,
     reason: "",
   };
 
@@ -344,21 +380,17 @@ function evaluateBattery(d) {
   }
 
   const unitPrice = Math.round(price / kwh);
-  const ratio = Math.round((unitPrice / BATTERY_MARKET_RATE.avgYenPerKwh) * 100) / 100;
-  const { tier, label } = tierFromRatio(ratio);
-
   check.unitPrice = unitPrice;
-  check.ratio = ratio;
-  check.tier = tier;
-  check.label = label;
-  check.reason = {
-    cheap: "kWh単価が市場相場平均の0.7倍以下です。安さの理由（機種・保証年数）も確認してください。",
-    within_range: "kWh単価は市場相場平均から大きく外れていません。ただし容量帯によって適正な単価幅は変わります（小容量ほど割高、大容量ほど割安が一般的）。",
-    high: "kWh単価が市場相場平均を20%以上上回っています。",
-    needs_check: "kWh単価が市場相場平均を50%以上上回っています。内訳を確認することを強くおすすめします。",
-  }[tier];
 
-  return check;
+  const range = resolveRange(findCapacityTier(BATTERY_CAPACITY_TIERS, kwh, "maxKwh"), model);
+  const result = judgeAgainstRange(check, unitPrice, range, model?.name, "kWh");
+
+  // 特定負荷型は全負荷型より2〜3割安い水準が一般的なので注記する
+  if (d.load_type === "特定負荷") {
+    result.reason += "（この基準は全負荷型の水準です。特定負荷型は一般に2〜3割安い傾向があります）";
+  }
+
+  return result;
 }
 
 function evaluateQuote(d) {
@@ -415,11 +447,60 @@ function evaluateQuote(d) {
     flags.push({ level: "info", message: "電力会社への申請・工事負担金についての記載が見当たりません。後から追加費用が発生しないか確認してください。" });
   }
 
+  const summary = buildSummary(d, solarCheck, batteryCheck, flags);
+  const installCheck = evaluateInstallFee(d);
+
+  if (installCheck.applicable && (installCheck.tier === "high" || installCheck.tier === "needs_check")) {
+    summary.points.unshift(installCheck.reason);
+    summary.headline = "この見積もりには、確認・交渉できる余地があります。";
+    summary.points = summary.points.slice(0, 4);
+  }
+
   return {
     solarCheck,
     batteryCheck,
+    installCheck,
     flags,
+    summary,
     disclaimer:
       "この診断は価格確認の目安であり、契約すべきか・解約すべきかを判断するものではありません。屋根の下地状況や分電盤の容量など、現地を見ないと分からない点は含まれていません。蓄電池の相場基準値は公的統計ではなく、施工店の見積もり実績を集計した市場調査データの平均値です。",
   };
+}
+
+// ---------------------------------------------------------------------------
+// 総合コメント：金額の高い・安いだけでなく「まだ確認・交渉できる余地」を示す
+// ---------------------------------------------------------------------------
+function buildSummary(d, solarCheck, batteryCheck, flags) {
+  const points = [];
+
+  for (const [check, unit] of [[solarCheck, "kW"], [batteryCheck, "kWh"]]) {
+    if (!check?.applicable) continue;
+    if (check.tier === "high" || check.tier === "needs_check") {
+      points.push(`${check.modelName ? check.modelName + "の" : ""}価格帯の上限を超えています。金額そのものに確認の余地があります。`);
+    } else if (check.tier === "within_range" && check.reason?.includes("上限寄り")) {
+      points.push(`価格帯には収まっていますが上限寄りです。同じ機種・同じ構成でも、これより下の水準の事例があります。`);
+    } else if (check.tier === "unknown") {
+      points.push(`内訳が分かれておらず単価が出せませんでした。内訳を出してもらうと、比較できる見積もりになります。`);
+    }
+  }
+
+  // 保証・工事範囲など、金額以外で差がつく論点
+  if (d.warranty_years != null && d.warranty_years <= 10) {
+    points.push(`保証が${d.warranty_years}年です。同じ価格帯でも15年保証の構成があります。`);
+  } else if (!d.mentions_warranty) {
+    points.push("保証年数の記載がありません。機器・工事それぞれの保証年数と範囲を確認してください。");
+  }
+  if (!d.mentions_scaffolding_fee) {
+    points.push("足場費の記載がありません。含まれているのか、別途なのかで総額が変わります。");
+  }
+  if (!d.mentions_grid_connection_fee) {
+    points.push("電力会社への申請・工事負担金の扱いが見積書に書かれていません。");
+  }
+
+  const headline =
+    points.length === 0
+      ? "金額・構成ともに大きな引っかかりはありませんでした。現地条件（屋根の下地・分電盤・電力会社側の工事）は書面では分からないため、そこだけ確認しておくと安心です。"
+      : "この見積もりには、確認・交渉できる余地があります。";
+
+  return { headline, points: points.slice(0, 4) };
 }
