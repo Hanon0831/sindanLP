@@ -80,22 +80,19 @@
 
   /* ---------- Hero ---------- */
   .hero{
-    position:relative;overflow:hidden;
-    padding:36px 24px 40px;
-    min-height:620px;
-    display:flex;align-items:center;
-  }
-  .hero-bg{position:absolute;inset:0;z-index:0;}
-  .hero-bg img{width:100%;height:100%;object-fit:cover;object-position:70% center;display:block;}
-  .hero-bg::after{
-    content:"";position:absolute;inset:0;
-    background:linear-gradient(90deg,
-      var(--paper) 0%, var(--paper) 32%,
-      rgba(248,244,237,0.92) 44%, rgba(248,244,237,0.55) 58%, rgba(248,244,237,0.08) 74%);
+    padding:36px 24px 0;
+    background:linear-gradient(180deg,var(--paper) 0%, var(--paper) 70%, var(--blue-pale) 100%);
   }
   .hero-inner{
-    position:relative;z-index:1;
-    max-width:1080px;margin:0 auto;width:100%;
+    max-width:980px;margin:0 auto;width:100%;
+  }
+  .hero-copy{max-width:640px;margin:0 auto;}
+
+  .hero-art{position:relative;margin-top:36px;max-width:760px;margin-left:auto;margin-right:auto;}
+  .hero-art img{display:block;width:100%;height:auto;border-radius:20px 20px 0 0;}
+  .hero-art-tag{
+    text-align:center;background:var(--red);color:#fff;font-size:0.86rem;font-weight:700;
+    padding:11px 20px;
   }
 
   /* badge box */
@@ -113,9 +110,9 @@
     margin-top:20px;color:var(--ink-soft);font-size:0.98rem;max-width:46ch;line-height:1.85;
   }
   .hero p.lead b{color:var(--navy);font-weight:700;}
-  .hero-copy{text-align:left;max-width:540px;}
-  .hero-copy .badge-box{margin:0;}
-  .hero-copy p.lead{margin-left:0;margin-right:0;}
+  .hero-copy{text-align:center;max-width:640px;margin:0 auto;}
+  .hero-copy .badge-box{margin:0 auto;}
+  .hero-copy p.lead{margin-left:auto;margin-right:auto;}
   @keyframes heroFadeUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
   .hero-copy .badge-box,.hero-copy h1,.hero-copy p.lead,.hero-copy .hero-ctas,.hero-copy .hero-note,.hero-copy .trust-strip{
     opacity:0;animation:heroFadeUp .7s ease forwards;
@@ -131,7 +128,7 @@
       opacity:1;animation:none;
     }
   }
-  .hero-ctas{display:flex;gap:14px;margin-top:28px;flex-wrap:wrap;justify-content:flex-start;}
+  .hero-ctas{display:flex;gap:14px;margin-top:28px;flex-wrap:wrap;justify-content:center;}
   .btn-primary{
     position:relative;
     background:var(--red);color:#fff;border:none;
@@ -155,16 +152,13 @@
     margin-top:16px;font-size:0.78rem;color:var(--ink-soft);
     font-family:'Roboto Mono',monospace;
   }
-  .trust-strip{display:flex;justify-content:flex-start;gap:8px 20px;flex-wrap:wrap;margin-top:16px;}
+  .trust-strip{display:flex;justify-content:center;gap:8px 20px;flex-wrap:wrap;margin-top:16px;}
   .trust-strip .item{display:flex;align-items:center;gap:6px;font-size:0.78rem;color:var(--ink-soft);}
   .trust-strip .item svg{width:15px;height:15px;color:var(--green);flex:none;}
 
   /* ---- Realistic quote-sheet mock document ---- */
   @media(max-width:820px){
-    .hero{min-height:auto;padding-top:0;flex-direction:column;align-items:stretch;}
-    .hero-bg{position:relative;height:220px;order:-1;}
-    .hero-bg::after{background:linear-gradient(180deg,rgba(248,244,237,0.15) 0%,rgba(248,244,237,0.7) 75%,var(--paper) 100%);}
-    .hero-copy{max-width:none;padding-top:28px;}
+    .hero-art{margin-top:28px;}
   }
 
   /* ---------- Section shell ---------- */
@@ -482,9 +476,6 @@
 </header>
 
 <section class="hero">
-  <div class="hero-bg">
-    <img src="illust.png" alt="訪問営業を受けて、金額・時間・仕組みに不安を感じている様子のイラスト">
-  </div>
   <div class="hero-inner">
     <div class="hero-copy">
       <div class="badge-box">
@@ -508,6 +499,11 @@
         <div class="item"><svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="1.6"/><path d="M6 10.5l2.5 2.5L14 7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>しつこい営業はしません</div>
         <div class="item"><svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="1.6"/><path d="M6 10.5l2.5 2.5L14 7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>電気工事店登録済み(自社施工)</div>
       </div>
+    </div>
+
+    <div class="hero-art">
+      <img src="illust.png" alt="訪問営業を受けて、金額・時間・仕組みに不安を感じている様子のイラスト">
+      <div class="hero-art-tag">こんな状況、ありませんか？</div>
     </div>
   </div>
 </section>
