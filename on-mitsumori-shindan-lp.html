@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>その見積もり、適正価格ですか？｜無料 見積もり査定</title>
+<title>その見積もり、適正価格ですか？｜見積書AI診断</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@500;700;900&family=Noto+Sans+JP:wght@400;500;700&family=Roboto+Mono:wght@500;700&display=swap" rel="stylesheet">
@@ -312,34 +312,41 @@
     transform:rotate(40deg);
   }
   .check-item h4{margin:0 0 6px;font-family:'Noto Sans JP',sans-serif;font-size:0.98rem;color:var(--navy);}
+  .report-note{text-align:center;margin-top:28px;font-size:0.82rem;color:var(--ink-soft);}
+  .report-note a{color:var(--blue);text-decoration:underline;text-underline-offset:3px;}
   .check-item p{margin:0;font-size:0.82rem;color:var(--ink-soft);}
 
   /* ---------- About / Company profile (compact) ---------- */
-  .about{background:var(--paper-card);border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:52px 0;}
+  .about{background:var(--paper-card);border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:60px 0;}
   .about-inner{
-    display:grid;grid-template-columns:140px 1fr;gap:28px;align-items:start;
     max-width:760px;margin:0 auto;
-    border:1px solid var(--line);background:var(--paper);padding:22px;border-radius:var(--radius);
+    border:1px solid var(--line);background:var(--paper);border-radius:var(--radius);
+    overflow:hidden;
   }
   .about-photo{
-    width:140px;height:140px;
-    border:1px solid var(--line);border-radius:var(--radius);
-    overflow:hidden;flex:none;
+    width:100%;height:220px;
   }
   .about-photo img{width:100%;height:100%;object-fit:cover;display:block;}
-  .about-lead{color:var(--ink-soft);font-size:0.88rem;margin:0 0 14px;}
-  .cred-row{display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap;}
+  .about-body{padding:26px 28px 28px;}
+  .about-lead{color:var(--ink);font-size:0.96rem;margin:0 0 20px;line-height:1.9;}
+  .cred-row{display:flex;gap:14px;margin-bottom:22px;flex-wrap:wrap;}
   .cred-mini{
-    display:flex;flex-direction:column;border:1px solid var(--line);border-radius:var(--radius);
-    padding:8px 12px;background:#fff;min-width:96px;
+    flex:1;min-width:140px;
+    display:flex;flex-direction:column;border:1px solid var(--line);border-top:3px solid var(--red);
+    border-radius:var(--radius-sm);padding:16px 16px;background:#fff;
   }
-  .cred-mini-val{font-family:'Roboto Mono',monospace;font-weight:700;font-size:0.86rem;color:var(--navy);}
-  .cred-mini-label{font-size:0.68rem;color:var(--ink-soft);margin-top:2px;}
+  .cred-mini-val{font-family:'Roboto Mono',monospace;font-weight:700;font-size:1.35rem;color:var(--navy);}
+  .cred-mini-label{font-size:0.74rem;color:var(--ink-soft);margin-top:4px;}
   .badge-row{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px;}
   .badge{
     font-family:'Roboto Mono',monospace;font-size:0.7rem;color:var(--navy);
     border:1px solid var(--blue);background:var(--blue-pale);
     padding:5px 10px;border-radius:20px;
+  }
+  .reg-badge{
+    display:inline-flex;align-items:center;gap:8px;
+    background:var(--green-pale);border:1px solid var(--green);color:var(--green);
+    font-weight:700;font-size:0.78rem;padding:8px 14px;border-radius:999px;margin-bottom:20px;
   }
   .about-row{
     display:grid;grid-template-columns:64px 1fr;gap:10px;
@@ -389,7 +396,7 @@
     border-radius:var(--radius);padding:40px 34px;position:relative;
   }
   .form-shell::before{
-    content:"見積査定 申込書";
+    content:"見積書AI診断シート";
     position:absolute;top:-14px;left:32px;background:var(--red);color:#fff;
     font-family:'Noto Serif JP',serif;font-weight:700;font-size:0.8rem;
     padding:6px 14px;letter-spacing:0.08em;
@@ -487,6 +494,11 @@
   .spec-item{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius-sm);padding:12px 14px;}
   .spec-item .label{font-size:0.7rem;color:var(--ink-soft);}
   .spec-item .value{font-family:'Roboto Mono',monospace;font-size:0.98rem;color:var(--ink);font-weight:700;margin-top:3px;}
+  .subsidy-block{display:none;margin-top:14px;background:var(--blue-pale);border-radius:var(--radius-sm);padding:14px 18px;}
+  .subsidy-title{font-size:0.82rem;font-weight:700;color:var(--navy);margin-bottom:8px;}
+  .subsidy-list{margin:0;padding-left:20px;}
+  .subsidy-list li{font-size:0.86rem;color:var(--ink);margin-bottom:4px;}
+  .subsidy-caveat{font-size:0.72rem;color:var(--ink-soft);margin-top:10px;}
 
   .diag-flags{margin-top:22px;}
   .diag-flags h4{font-size:0.92rem;color:var(--navy);margin:0 0 10px;}
@@ -531,8 +543,7 @@
     .check-grid{grid-template-columns:1fr;}
     .trust-grid{grid-template-columns:repeat(2,1fr);}
     .process-item{grid-template-columns:44px 1fr;}
-    .about-inner{grid-template-columns:1fr;text-align:left;}
-    .about-photo{width:100%;height:120px;}
+    .about-photo{height:160px;}
   }
   @media (max-width:520px){
     .hero h1 .ask{font-size:1.6rem;}
@@ -544,8 +555,8 @@
 
 <header class="site">
   <div class="site-inner">
-    <div class="brand"><span class="seal">査定</span>おひさま診断室</div>
-    <button class="header-cta" onclick="document.getElementById('apply').scrollIntoView()">無料で査定する</button>
+    <div class="brand"><span class="seal">診断</span>おひさま診断室</div>
+    <button class="header-cta" onclick="document.getElementById('apply').scrollIntoView()">無料でAI診断する</button>
   </div>
 </header>
 
@@ -554,7 +565,7 @@
     <div class="hero-copy">
       <div class="badge-box">
         <div class="small">太陽光発電・蓄電池の見積もり</div>
-        <div class="big">無料セカンドオピニオン査定</div>
+        <div class="big">無料セカンドオピニオンAI診断</div>
       </div>
 
       <h1>
@@ -564,19 +575,19 @@
       <p class="lead">見積書の写真を1枚送るだけ。太陽光のプロが無料で相場通りか確認し、<b>もっとお安い見積もりを出せるかもしれません。</b>クーリングオフ期間内であれば、契約後でもまだ間に合います。</p>
 
       <div class="hero-ctas">
-        <button class="btn-primary" onclick="document.getElementById('apply').scrollIntoView()">写真を送って無料査定を依頼する</button>
-        <a class="hero-flow-link" href="#flow">査定の流れを見る</a>
+        <button class="btn-primary" onclick="document.getElementById('apply').scrollIntoView()">写真を送って無料AI診断を依頼する</button>
+        <a class="hero-flow-link" href="#flow">診断の流れを見る</a>
       </div>
       <div class="hero-note">完全無料 ／ 契約義務なし ／ 関東エリア対応</div>
       <div class="trust-strip">
-        <div class="item"><svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="1.6"/><path d="M6 10.5l2.5 2.5L14 7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>個人情報は査定目的以外に使いません</div>
+        <div class="item"><svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="1.6"/><path d="M6 10.5l2.5 2.5L14 7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>個人情報は診断目的以外に使いません</div>
         <div class="item"><svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="1.6"/><path d="M6 10.5l2.5 2.5L14 7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>しつこい営業はしません</div>
         <div class="item"><svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="1.6"/><path d="M6 10.5l2.5 2.5L14 7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>電気工事店登録済み(自社施工)</div>
       </div>
     </div>
 
     <div class="doc-wrap" id="docWrap">
-      <div class="stamp">要査定<small>SECOND OPINION</small></div>
+      <div class="stamp">要確認<small>SECOND OPINION</small></div>
       <div class="doc-mini">
         <div class="doc-band">御 見 積 書</div>
         <div class="doc-body">
@@ -638,125 +649,6 @@
   </div>
 </section>
 
-<section id="flow">
-  <div class="wrap">
-    <div class="section-head">
-      <div class="eyebrow">How It Works</div>
-      <h2>査定の流れ</h2>
-      <p>見積書を送っていただくだけで、その場でAIが内容を診断します。</p>
-    </div>
-    <div class="process-list">
-      <div class="process-item">
-        <div class="process-num mono">01</div>
-        <div>
-          <h3>見積書を撮影・アップロード</h3>
-          <p>スマホで撮影した写真、またはPDFファイルを送信するだけ。会員登録・電話番号の入力は不要です。</p>
-        </div>
-      </div>
-      <div class="process-item">
-        <div class="process-num mono">02</div>
-        <div>
-          <h3>AIがその場で診断</h3>
-          <p>kW単価・機種・金利・値引き条件などを読み取り、国の公表データに基づく相場と照らして5段階で判定します。</p>
-        </div>
-      </div>
-      <div class="process-item">
-        <div class="process-num mono">03</div>
-        <div>
-          <h3>気になれば、無料相談へ</h3>
-          <p>診断結果を見て相談したくなったら、そのまま無料相談に進めます。相談のみでご契約の義務は一切ありません。</p>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section class="report">
-  <div class="wrap">
-    <div class="section-head">
-      <div class="eyebrow">Check Points</div>
-      <h2>査定で確認する4つのポイント</h2>
-      <p>感覚ではなく、以下の基準に沿って一つずつ確認します。</p>
-    </div>
-    <div class="check-grid">
-      <div class="check-item">
-        <div class="check-mark"></div>
-        <div><h4>kW単価・機器価格</h4><p>パネル・パワーコンディショナー・蓄電池の単価が、地域相場と比べて妥当かを確認します。</p></div>
-      </div>
-      <div class="check-item">
-        <div class="check-mark"></div>
-        <div><h4>施工内容・工事範囲</h4><p>屋根形状や配線経路に対して工事内容・工事費の内訳が適正かを確認します。</p></div>
-      </div>
-      <div class="check-item">
-        <div class="check-mark"></div>
-        <div><h4>保証・アフター体制</h4><p>機器保証・工事保証の年数と範囲、施工会社の連絡体制を確認します。</p></div>
-      </div>
-      <div class="check-item">
-        <div class="check-mark"></div>
-        <div><h4>契約条件</h4><p>解約条件やクーリングオフの記載など、契約書面上の注意点を確認します。</p></div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section class="about">
-  <div class="wrap">
-    <div class="section-head">
-      <div class="eyebrow">About Us</div>
-      <h2>査定するのは、どんな会社か</h2>
-    </div>
-    <div class="about-inner">
-      <div class="about-photo">
-        <img src="storefront.jpg" alt="合同会社on 店舗外観">
-      </div>
-      <div>
-        <p class="about-lead">年間約400件の施工を、営業から工事まで自社スタッフで対応しています。だからこそ、他社の見積もりも公平な目線でチェックし、適正価格をご提示できます。</p>
-
-        <div class="cred-row">
-          <div class="cred-mini"><span class="cred-mini-val">年間約400件</span><span class="cred-mini-label">施工実績</span></div>
-          <div class="cred-mini"><span class="cred-mini-val">完全自社施工</span><span class="cred-mini-label">強み</span></div>
-        </div>
-
-        <dl class="about-row"><dt>会社名</dt><dd>合同会社on</dd></dl>
-        <dl class="about-row"><dt>所在地</dt><dd>神奈川県横浜市金沢区能見台通22-9 ネクサス能見台</dd></dl>
-        <dl class="about-row"><dt>登録</dt><dd>電気工事店登録　神奈川県知事第20230036号</dd></dl>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section class="trust">
-  <div class="wrap">
-    <div class="section-head">
-      <div class="eyebrow">Service Conditions</div>
-      <h2>安心してご依頼いただける4つの理由</h2>
-    </div>
-    <div class="trust-grid">
-      <div class="trust-card">
-        <div class="trust-label">対応エリア</div>
-        <div class="trust-num mono">関東一円</div>
-        <div class="trust-sub">東京・神奈川・埼玉・千葉 など</div>
-      </div>
-      <div class="trust-card">
-        <div class="trust-label">査定費用</div>
-        <div class="trust-num mono">¥0</div>
-        <div class="trust-sub">何度ご依頼いただいても無料</div>
-      </div>
-      <div class="trust-card">
-        <div class="trust-label">回答スピード</div>
-        <div class="trust-num mono">その場で即時</div>
-        <div class="trust-sub">AI診断は待ち時間なし</div>
-      </div>
-      <div class="trust-card">
-        <div class="trust-label">ご契約の義務</div>
-        <div class="trust-num mono">なし</div>
-        <div class="trust-sub">査定結果だけの受け取りもOK</div>
-      </div>
-    </div>
-    <p class="trust-note">※ 査定結果や当社プランのご提示後、ご契約いただくかどうかはお客様のご判断です。しつこい営業は行いません。</p>
-  </div>
-</section>
-
 <section class="form-section" id="apply">
   <div class="wrap">
     <div class="section-head">
@@ -804,6 +696,7 @@
         <div class="diag-summary" id="diagSummary"></div>
 
         <div class="spec-grid" id="specGrid"></div>
+        <div class="subsidy-block" id="subsidyBlock"></div>
 
         <div class="diag-flags" id="flagsBlock">
           <h4>契約前の確認ポイント</h4>
@@ -853,6 +746,130 @@
   </div>
 </section>
 
+<section id="flow">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">How It Works</div>
+      <h2>診断の流れ</h2>
+      <p>見積書を送っていただくだけで、その場でAIが内容を診断します。</p>
+    </div>
+    <div class="process-list">
+      <div class="process-item">
+        <div class="process-num mono">01</div>
+        <div>
+          <h3>見積書を撮影・アップロード</h3>
+          <p>スマホで撮影した写真、またはPDFファイルを送信するだけ。会員登録・電話番号の入力は不要です。</p>
+        </div>
+      </div>
+      <div class="process-item">
+        <div class="process-num mono">02</div>
+        <div>
+          <h3>AIがその場で診断</h3>
+          <p>kW単価・機種・金利・値引き条件などを読み取り、国の公表データに基づく相場と照らして5段階で判定します。</p>
+        </div>
+      </div>
+      <div class="process-item">
+        <div class="process-num mono">03</div>
+        <div>
+          <h3>気になれば、無料相談へ</h3>
+          <p>診断結果を見て相談したくなったら、そのまま無料相談に進めます。相談のみでご契約の義務は一切ありません。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="report">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">Check Points</div>
+      <h2>AI診断で確認するポイント</h2>
+      <p>感覚ではなく、以下の基準に沿って一つずつ確認します。</p>
+    </div>
+    <div class="check-grid">
+      <div class="check-item">
+        <div class="check-mark"></div>
+        <div><h4>容量帯・機種別の単価</h4><p>太陽光はkW単価、蓄電池はkWh単価を、容量帯とメーカー・機種ごとの価格帯と比較します。</p></div>
+      </div>
+      <div class="check-item">
+        <div class="check-mark"></div>
+        <div><h4>工事費の妥当性</h4><p>太陽光・蓄電池それぞれの工事費が、一般的な水準に収まっているかを確認します。足場費は別枠で確認します。</p></div>
+      </div>
+      <div class="check-item">
+        <div class="check-mark"></div>
+        <div><h4>金利・値引き条件</h4><p>ローンの金利が高くないか、値引き額が総額に対して不自然に大きくないかを確認します。</p></div>
+      </div>
+      <div class="check-item">
+        <div class="check-mark"></div>
+        <div><h4>記載漏れのチェック</h4><p>保証年数、電力会社への申請費用など、あとから追加費用の原因になりやすい項目の記載があるかを確認します。</p></div>
+      </div>
+    </div>
+    <p class="report-note">判定の境目や数値の出典は、すべて<a href="shindan-kijun.html" target="_blank" rel="noopener">診断の根拠ページ</a>で公開しています。</p>
+  </div>
+</section>
+
+<section class="trust">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">Service Conditions</div>
+      <h2>安心してご依頼いただける4つの理由</h2>
+    </div>
+    <div class="trust-grid">
+      <div class="trust-card">
+        <div class="trust-label">対応エリア</div>
+        <div class="trust-num mono">関東一円</div>
+        <div class="trust-sub">東京・神奈川・埼玉・千葉 など</div>
+      </div>
+      <div class="trust-card">
+        <div class="trust-label">診断費用</div>
+        <div class="trust-num mono">¥0</div>
+        <div class="trust-sub">何度ご依頼いただいても無料</div>
+      </div>
+      <div class="trust-card">
+        <div class="trust-label">回答スピード</div>
+        <div class="trust-num mono">その場で即時</div>
+        <div class="trust-sub">AI診断は待ち時間なし</div>
+      </div>
+      <div class="trust-card">
+        <div class="trust-label">ご契約の義務</div>
+        <div class="trust-num mono">なし</div>
+        <div class="trust-sub">診断結果だけの受け取りもOK</div>
+      </div>
+    </div>
+    <p class="trust-note">※ 診断結果や当社プランのご提示後、ご契約いただくかどうかはお客様のご判断です。しつこい営業は行いません。</p>
+  </div>
+</section>
+
+<section class="about">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">About Us</div>
+      <h2>診断するのは、どんな会社か</h2>
+    </div>
+    <div class="about-inner">
+      <div class="about-photo">
+        <img src="storefront.jpg" alt="合同会社on 店舗外観">
+      </div>
+      <div class="about-body">
+        <p class="about-lead">年間約400件の施工を、営業から工事まで自社スタッフで対応しています。だからこそ、他社の見積もりも公平な目線でチェックし、適正価格をご提示できます。</p>
+
+        <div class="cred-row">
+          <div class="cred-mini"><span class="cred-mini-val">年間約400件</span><span class="cred-mini-label">施工実績</span></div>
+          <div class="cred-mini"><span class="cred-mini-val">完全自社施工</span><span class="cred-mini-label">強み</span></div>
+        </div>
+
+        <div class="reg-badge">
+          <svg viewBox="0 0 20 20" fill="none" width="16" height="16"><circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="1.6"/><path d="M6 10.5l2.5 2.5L14 7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          電気工事店登録　神奈川県知事第20230036号
+        </div>
+
+        <dl class="about-row"><dt>会社名</dt><dd>合同会社on</dd></dl>
+        <dl class="about-row"><dt>所在地</dt><dd>神奈川県横浜市金沢区能見台通22-9 ネクサス能見台</dd></dl>
+      </div>
+    </div>
+  </div>
+</section>
+
 <section class="faq">
   <div class="wrap">
     <div class="section-head">
@@ -861,7 +878,7 @@
     </div>
     <details class="faq-item">
       <summary>本当に無料ですか？</summary>
-      <p>はい、査定・ご提案まで無料です。ご契約いただくかどうかはお客様のご判断にお任せしており、しつこい営業は行いません。</p>
+      <p>はい、診断・ご提案まで無料です。ご契約いただくかどうかはお客様のご判断にお任せしており、しつこい営業は行いません。</p>
     </details>
     <details class="faq-item">
       <summary>まだ契約前ですが依頼できますか？</summary>
@@ -869,7 +886,7 @@
     </details>
     <details class="faq-item">
       <summary>見積書の一部しか手元にありません</summary>
-      <p>お手元にある範囲で構いません。写真1枚からでも査定を開始できます。</p>
+      <p>お手元にある範囲で構いません。写真1枚からでも診断を開始できます。</p>
     </details>
     <details class="faq-item">
       <summary>対応エリアはどこですか？</summary>
@@ -1052,6 +1069,20 @@
     document.getElementById('specGrid').innerHTML = specs.map(([l,v]) =>
       `<div class="spec-item"><div class="label">${l}</div><div class="value">${v}</div></div>`
     ).join('');
+
+    const subsidyEl = document.getElementById('subsidyBlock');
+    const subsidies = extracted.subsidy_mentions || [];
+    if(subsidies.length){
+      subsidyEl.innerHTML = `
+        <div class="subsidy-title">見積書に記載のあった補助金制度</div>
+        <ul class="subsidy-list">
+          ${subsidies.map(s => `<li>${s.name}${s.amount_yen ? `（¥${Number(s.amount_yen).toLocaleString()}）` : ''}</li>`).join('')}
+        </ul>
+        <div class="subsidy-caveat">※ 記載内容をそのまま表示しています。対象条件や交付の可否は当診断では判定していません。</div>`;
+      subsidyEl.style.display = 'block';
+    } else {
+      subsidyEl.style.display = 'none';
+    }
 
     const flagsBlock = document.getElementById('flagsBlock');
     const flagsList = document.getElementById('flagsList');
