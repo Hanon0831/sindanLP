@@ -85,12 +85,15 @@
   .hero-bg-tint{
     position:absolute;inset:0;
     background:linear-gradient(90deg,
-      var(--paper) 0%, var(--paper) 30%,
-      rgba(248,244,237,0.9) 42%, rgba(248,244,237,0.5) 56%, rgba(248,244,237,0.05) 72%);
+      rgba(248,244,237,0.62) 0%, rgba(248,244,237,0.6) 22%,
+      rgba(248,244,237,0.42) 40%, rgba(248,244,237,0.16) 56%, rgba(248,244,237,0.02) 72%);
   }
   .hero-inner{position:absolute;inset:0;display:flex;align-items:center;}
   .hero-copy{
     max-width:480px;padding:0 40px;
+  }
+  .hero-copy h1,.hero-copy p.lead,.hero-copy .hero-note,.hero-copy .trust-strip .item{
+    text-shadow:0 1px 12px rgba(248,244,237,0.9), 0 1px 3px rgba(248,244,237,0.9);
   }
 
   /* badge box */
