@@ -39,6 +39,7 @@ export default async function handler(req, res) {
   }
 
   const { name, tel, email, note, extracted, verdict } = req.body || {};
+  const isValidEmail = (e) => typeof e === "string" && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e.trim());
 
   if (!name || !tel) {
     res.status(400).json({ error: "bad_request", message: "お名前と電話番号を入力してください。" });
@@ -59,7 +60,7 @@ export default async function handler(req, res) {
       body: JSON.stringify({
         from: fromEmail,
         to: [toEmail],
-        reply_to: email || undefined,
+        reply_to: isValidEmail(email) ? email.trim() : undefined,
         subject: `【無料相談】${escapeHtml(name)} 様よりお問い合わせ`,
         html,
       }),
