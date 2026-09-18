@@ -80,20 +80,20 @@
 
   /* ---------- Hero ---------- */
   .hero{
-    padding:36px 24px 0;
-    background:linear-gradient(180deg,var(--paper) 0%, var(--paper) 70%, var(--blue-pale) 100%);
+    padding:36px 24px 0 24px;
+    background:linear-gradient(180deg,var(--paper) 0%, var(--paper) 75%, var(--blue-pale) 100%);
+    overflow:hidden;
   }
   .hero-inner{
-    max-width:980px;margin:0 auto;width:100%;
+    max-width:1180px;margin:0 auto;width:100%;
+    display:grid;grid-template-columns:1fr 1fr;gap:36px;align-items:center;
   }
-  .hero-copy{max-width:640px;margin:0 auto;}
+  .hero-copy{
+    max-width:520px;
+  }
 
-  .hero-art{position:relative;margin-top:36px;max-width:760px;margin-left:auto;margin-right:auto;}
-  .hero-art img{display:block;width:100%;height:auto;border-radius:20px 20px 0 0;}
-  .hero-art-tag{
-    text-align:center;background:var(--red);color:#fff;font-size:0.86rem;font-weight:700;
-    padding:11px 20px;
-  }
+  .hero-art{align-self:end;}
+  .hero-art img{display:block;width:100%;height:auto;}
 
   /* badge box */
   .badge-box{display:block;background:linear-gradient(90deg,var(--navy),var(--navy-soft));border-radius:var(--radius-sm);padding:16px 20px;box-shadow:0 12px 24px -12px rgba(44,74,102,0.5);}
@@ -106,29 +106,36 @@
   .hero h1 .ask{display:block;margin-top:14px;font-size:2.05rem;font-weight:900;color:var(--navy);line-height:1.45;letter-spacing:-0.01em;}
   .hero h1 .accent{color:var(--red);}
 
+  .worry-list{margin-top:18px;display:flex;flex-direction:column;gap:9px;}
+  .worry{display:flex;align-items:center;gap:10px;font-size:0.88rem;color:var(--ink);font-weight:500;}
+  .worry-icon{
+    flex:none;width:26px;height:26px;border-radius:50%;background:var(--red-pale);color:var(--red-dark);
+    display:flex;align-items:center;justify-content:center;font-weight:900;font-size:0.82rem;
+  }
   .hero p.lead{
     margin-top:20px;color:var(--ink-soft);font-size:0.98rem;max-width:46ch;line-height:1.85;
   }
   .hero p.lead b{color:var(--navy);font-weight:700;}
-  .hero-copy{text-align:center;max-width:640px;margin:0 auto;}
-  .hero-copy .badge-box{margin:0 auto;}
-  .hero-copy p.lead{margin-left:auto;margin-right:auto;}
+  .hero-copy{text-align:left;}
+  .hero-copy .badge-box{margin:0;}
+  .hero-copy p.lead{margin-left:0;margin-right:0;}
   @keyframes heroFadeUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
-  .hero-copy .badge-box,.hero-copy h1,.hero-copy p.lead,.hero-copy .hero-ctas,.hero-copy .hero-note,.hero-copy .trust-strip{
+  .hero-copy .badge-box,.hero-copy h1,.hero-copy .worry-list,.hero-copy p.lead,.hero-copy .hero-ctas,.hero-copy .hero-note,.hero-copy .trust-strip{
     opacity:0;animation:heroFadeUp .7s ease forwards;
   }
   .hero-copy .badge-box{animation-delay:.05s;}
   .hero-copy h1{animation-delay:.18s;}
-  .hero-copy p.lead{animation-delay:.32s;}
-  .hero-copy .hero-ctas{animation-delay:.46s;}
-  .hero-copy .hero-note{animation-delay:.58s;}
-  .hero-copy .trust-strip{animation-delay:.68s;}
+  .hero-copy .worry-list{animation-delay:.28s;}
+  .hero-copy p.lead{animation-delay:.4s;}
+  .hero-copy .hero-ctas{animation-delay:.52s;}
+  .hero-copy .hero-note{animation-delay:.62s;}
+  .hero-copy .trust-strip{animation-delay:.7s;}
   @media (prefers-reduced-motion: reduce){
-    .hero-copy .badge-box,.hero-copy h1,.hero-copy p.lead,.hero-copy .hero-ctas,.hero-copy .hero-note,.hero-copy .trust-strip{
+    .hero-copy .badge-box,.hero-copy h1,.hero-copy .worry-list,.hero-copy p.lead,.hero-copy .hero-ctas,.hero-copy .hero-note,.hero-copy .trust-strip{
       opacity:1;animation:none;
     }
   }
-  .hero-ctas{display:flex;gap:14px;margin-top:28px;flex-wrap:wrap;justify-content:center;}
+  .hero-ctas{display:flex;gap:14px;margin-top:28px;flex-wrap:wrap;justify-content:flex-start;}
   .btn-primary{
     position:relative;
     background:var(--red);color:#fff;border:none;
@@ -152,13 +159,14 @@
     margin-top:16px;font-size:0.78rem;color:var(--ink-soft);
     font-family:'Roboto Mono',monospace;
   }
-  .trust-strip{display:flex;justify-content:center;gap:8px 20px;flex-wrap:wrap;margin-top:16px;}
+  .trust-strip{display:flex;justify-content:flex-start;gap:8px 20px;flex-wrap:wrap;margin-top:16px;}
   .trust-strip .item{display:flex;align-items:center;gap:6px;font-size:0.78rem;color:var(--ink-soft);}
   .trust-strip .item svg{width:15px;height:15px;color:var(--green);flex:none;}
 
   /* ---- Realistic quote-sheet mock document ---- */
-  @media(max-width:820px){
-    .hero-art{margin-top:28px;}
+  @media(max-width:900px){
+    .hero-inner{grid-template-columns:1fr;}
+    .hero-art{margin-top:26px;align-self:auto;}
   }
 
   /* ---------- Section shell ---------- */
@@ -482,13 +490,8 @@
         <div class="small">太陽光発電・蓄電池の見積もり</div>
         <div class="big">無料セカンドオピニオンAI診断</div>
       </div>
-
-      <h1>
-        <span class="talk">「今なら値引きしますよ」</span>
-        <span class="ask">その勢いで決めた見積、<br>本当に<span class="accent">大丈夫</span>ですか？</span>
-      </h1>
-      <p class="lead">見積書の写真を1枚送るだけ。太陽光のプロが無料で相場通りか確認し、<b>もっとお安い見積もりを出せるかもしれません。</b>クーリングオフ期間内であれば、契約後でもまだ間に合います。</p>
-
+      <h1>こんなお悩み、ありませんか？</h1>
+      <p class="lead">見積書の写真を1枚送るだけ。AIが無料で相場と比べて、本当に妥当かどうかをお伝えします。</p>
       <div class="hero-ctas">
         <button class="btn-primary" onclick="document.getElementById('apply').scrollIntoView()">写真を送って無料AI診断を依頼する</button>
         <a class="hero-flow-link" href="#flow">診断の流れを見る</a>
@@ -502,11 +505,11 @@
     </div>
 
     <div class="hero-art">
-      <img src="illust.png" alt="訪問営業を受けて、金額・時間・仕組みに不安を感じている様子のイラスト">
-      <div class="hero-art-tag">こんな状況、ありませんか？</div>
+      <img src="illust2.png" alt="訪問営業を受け、金額・急かされる契約・工事内容に不安を感じている様子のイラスト">
     </div>
   </div>
 </section>
+
 
 <section class="problems">
   <div class="wrap">
