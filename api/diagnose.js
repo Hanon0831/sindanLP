@@ -180,6 +180,7 @@ async function extractQuoteData({ apiKey, mediaType, data }) {
   "warranty_years": number|null,
   "mentions_grid_connection_fee": boolean,
   "mentions_application_fee": boolean,
+  "subsidy_mentions": [{"name": string, "amount_yen": number|null}],
   "line_items": [{"name": string, "amount_yen": number|null}],
   "extraction_confidence": "high"|"medium"|"low",
   "notes": string
@@ -191,6 +192,7 @@ async function extractQuoteData({ apiKey, mediaType, data }) {
 - battery_related_subtotal_yen は、蓄電池本体・蓄電池用の設置工事に対応する金額の小計です。太陽光や他設備の金額を含めないでください。見積書が蓄電池単体（太陽光を含まない）の場合は、total_price_yen と同じ金額を設定してください。
 - 工事費は、太陽光分と蓄電池分に分けて抽出してください。solar_installation_fee_yen は太陽光の設置工事費・電気配線工事費など、battery_installation_fee_yen は蓄電池の設置工事費・据付工事費などの合計です。どちらに属するか判別できない共通の工事費は、どちらにも入れず installation_fee_yen にのみ入れてください。太陽光・蓄電池の区別なく「工事費一式」としか書かれていない場合も installation_fee_yen に入れてください。いずれも足場費は含めないでください（足場費は scaffolding_fee_yen）。機器代・部材代・諸経費は含めないでください。特定できない場合は null にしてください。
 - scaffolding_fee_yen は、足場設置費・足場代に該当する金額です。記載がなければ null にしてください。
+- subsidy_mentions は、見積書内に名称が明記されている補助金制度をすべて抽出してください（例:「東京都 災害に強い電力設備導入促進事業」「子育てエコホーム支援事業」「DER補助金」など）。金額が併記されていれば amount_yen に入れ、なければ null にしてください。見積書に補助金の記載が一切ない場合は空配列 [] にしてください。制度の対象条件や交付可否を判定する必要はありません。書いてある名称をそのまま拾うだけで構いません。
 - 内訳から太陽光・蓄電池それぞれの金額を分離できない場合（「太陽光・蓄電池セット一式」のような1行のみの場合など）は、両方とも null にしてください。無理に按分しないでください。
 - 足場費・電気配線工事費など太陽光・蓄電池のどちらに属するか判別できない共通費用は、どちらの小計にも含めず、line_items にのみ記載してください。
 - has_other_equipment は、太陽光・蓄電池以外の設備（エコキュート、V2H、カーポート等）が見積もりに混在している場合に true にしてください。

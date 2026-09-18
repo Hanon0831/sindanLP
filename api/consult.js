@@ -122,6 +122,7 @@ function buildHtml({ name, tel, email, note, extracted, verdict }) {
       <tr><td style="background:#f2f2f2;">見積総額</td><td>${e.total_price_yen ? "¥" + Number(e.total_price_yen).toLocaleString() : "—"}</td></tr>
       <tr><td style="background:#f2f2f2;">金利</td><td>${e.interest_rate_percent ?? "—"} %</td></tr>
       <tr><td style="background:#f2f2f2;">保証年数</td><td>${e.warranty_years ?? "—"} 年</td></tr>
+      <tr><td style="background:#f2f2f2;">記載補助金</td><td>${(e.subsidy_mentions || []).map(s => s.name + (s.amount_yen ? `（¥${Number(s.amount_yen).toLocaleString()}）` : "")).join("<br>") || "—"}</td></tr>
     </table>
 
     <p style="color:#888;font-size:12px;font-family:sans-serif;">
