@@ -1118,6 +1118,11 @@
       consultError.style.display = 'block';
       return;
     }
+    if(email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
+      consultError.textContent = 'メールアドレスの形式が正しくありません。ご確認ください。';
+      consultError.style.display = 'block';
+      return;
+    }
 
     const originalLabel = consultSubmitBtn.textContent;
     consultSubmitBtn.disabled = true;
