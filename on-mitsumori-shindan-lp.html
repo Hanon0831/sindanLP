@@ -97,15 +97,12 @@
   }
 
   /* badge box */
-  .badge-box{display:block;background:linear-gradient(90deg,var(--navy),var(--navy-soft));border-radius:var(--radius-sm);padding:16px 20px;box-shadow:0 12px 24px -12px rgba(44,74,102,0.5);}
+  .badge-box{display:block;text-align:center;background:linear-gradient(90deg,var(--navy),var(--navy-soft));border-radius:var(--radius-sm);padding:16px 20px;box-shadow:0 12px 24px -12px rgba(44,74,102,0.5);}
   .badge-box .small{color:#BFD6E3;font-size:0.86rem;font-weight:700;letter-spacing:0.02em;}
   .badge-box .big{color:#fff;font-size:1.4rem;font-weight:900;margin-top:4px;}
   @media(min-width:900px){.badge-box{display:inline-block;}.badge-box .small{font-size:0.78rem;}.badge-box .big{font-size:1.15rem;}}
 
-  .hero h1{margin:22px 0 0;line-height:1.6;}
-  .hero h1 .talk{display:block;font-size:1.2rem;font-weight:500;color:var(--ink-soft);}
-  .hero h1 .ask{display:block;margin-top:14px;font-size:2.05rem;font-weight:900;color:var(--navy);line-height:1.45;letter-spacing:-0.01em;}
-  .hero h1 .accent{color:var(--red);}
+  .hero h1{margin:22px 0 0;line-height:1.5;font-size:2rem;font-weight:900;color:var(--navy);letter-spacing:-0.01em;}
 
   .worry-list{margin-top:18px;display:flex;flex-direction:column;gap:9px;}
   .worry{display:flex;align-items:center;gap:10px;font-size:0.88rem;color:var(--ink);font-weight:500;}
@@ -136,7 +133,21 @@
       opacity:1;animation:none;
     }
   }
-  .hero-ctas{display:flex;gap:14px;margin-top:28px;flex-wrap:wrap;justify-content:flex-start;}
+  .hero-ctas{display:flex;gap:14px;margin-top:28px;flex-wrap:wrap;justify-content:flex-start;align-items:flex-start;}
+  .badge-wrap{position:relative;display:block;width:100%;}
+  @media(min-width:900px){.badge-wrap{display:inline-block;width:auto;}}
+  .cta-callout{
+    position:absolute;top:-18px;right:-14px;
+    background:var(--green);color:#fff;font-size:0.86rem;font-weight:700;
+    padding:9px 16px;border-radius:999px;
+    transform:rotate(8deg);
+    box-shadow:0 8px 16px -6px rgba(63,146,112,0.55);
+    white-space:nowrap;
+    animation:calloutPulse 2.4s ease-in-out infinite;
+  }
+  @keyframes calloutPulse{0%,100%{transform:rotate(8deg) scale(1);}50%{transform:rotate(8deg) scale(1.06);}}
+  @media (prefers-reduced-motion: reduce){.cta-callout{animation:none;}}
+  @media(max-width:640px){.cta-callout{font-size:0.78rem;padding:7px 13px;top:-15px;right:-10px;}}
   .btn-primary{
     position:relative;
     background:var(--red);color:#fff;border:none;
@@ -472,10 +483,27 @@
     .process-item{grid-template-columns:44px 1fr;}
   }
   @media (max-width:520px){
-    .hero h1 .ask{font-size:1.6rem;}
+    .hero h1{font-size:1.4rem;}
     .form-shell{padding:30px 20px;}
   }
 </style>
+<!-- Meta Pixel Code -->
+<script>
+!function(f,b,e,v,n,t,s)
+{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];
+s.parentNode.insertBefore(t,s)}(window, document,'script',
+'https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', '982150121582233');
+fbq('track', 'PageView');
+</script>
+<noscript><img height="1" width="1" style="display:none"
+src="https://www.facebook.com/tr?id=982150121582233&ev=PageView&noscript=1"
+/></noscript>
+<!-- End Meta Pixel Code -->
 </head>
 <body>
 
@@ -493,12 +521,15 @@
   </div>
   <div class="hero-inner">
     <div class="hero-copy">
-      <div class="badge-box">
-        <div class="small">太陽光発電・蓄電池の見積もり</div>
-        <div class="big">無料セカンドオピニオンAI診断</div>
+      <div class="badge-wrap">
+        <div class="badge-box">
+          <div class="small">太陽光発電・蓄電池の見積もり</div>
+          <div class="big">1分でわかる！簡単AI診断</div>
+        </div>
+        <div class="cta-callout">診断だけもOK！</div>
       </div>
       <h1>こんなお悩み、ありませんか？</h1>
-      <p class="lead">見積書の写真を1枚送るだけ。AIが無料で相場と比べて、本当に妥当かどうかをお伝えします。</p>
+      <p class="lead">見積書の写真を1枚送るだけ。容量・メーカーごとの<b>独自基準</b>でAIが無料診断し、本当に妥当かどうかをお伝えします。</p>
       <div class="hero-ctas">
         <button class="btn-primary" onclick="document.getElementById('apply').scrollIntoView()">写真を送って無料AI診断を依頼する</button>
         <a class="hero-flow-link" href="#flow">診断の流れを見る</a>
@@ -546,7 +577,7 @@
 <section class="form-section" id="apply">
   <div class="wrap">
     <div class="section-head">
-      <div class="eyebrow">Apply</div>
+      <div class="eyebrow">診断フォーム</div>
       <h2>見積書を送るだけ。その場でAIが診断します</h2>
       <p>会員登録・電話番号の入力は不要です。当社から電話をかけることもありません。</p>
     </div>
@@ -643,7 +674,7 @@
 <section id="flow">
   <div class="wrap">
     <div class="section-head">
-      <div class="eyebrow">How It Works</div>
+      <div class="eyebrow">診断の流れ</div>
       <h2>診断の流れ</h2>
       <p>見積書を送っていただくだけで、その場でAIが内容を診断します。</p>
     </div>
@@ -676,7 +707,7 @@
 <section class="report">
   <div class="wrap">
     <div class="section-head">
-      <div class="eyebrow">Check Points</div>
+      <div class="eyebrow">確認ポイント</div>
       <h2>AI診断で確認するポイント</h2>
       <p>感覚ではなく、以下の基準に沿って一つずつ確認します。</p>
     </div>
@@ -705,7 +736,7 @@
 <section class="trust">
   <div class="wrap">
     <div class="section-head">
-      <div class="eyebrow">Service Conditions</div>
+      <div class="eyebrow">ご利用条件</div>
       <h2>安心してご依頼いただける4つの理由</h2>
     </div>
     <div class="trust-grid">
@@ -737,7 +768,7 @@
 <section class="about">
   <div class="wrap">
     <div class="section-head">
-      <div class="eyebrow">About Us</div>
+      <div class="eyebrow">会社紹介</div>
       <h2>診断するのは、どんな会社か</h2>
     </div>
     <div class="about-inner">
@@ -767,7 +798,7 @@
 <section class="faq">
   <div class="wrap">
     <div class="section-head">
-      <div class="eyebrow">FAQ</div>
+      <div class="eyebrow">よくある質問</div>
       <h2>よくあるご質問</h2>
     </div>
     <details class="faq-item">
@@ -785,6 +816,22 @@
     <details class="faq-item">
       <summary>対応エリアはどこですか？</summary>
       <p>関東エリア（東京・神奈川・埼玉・千葉など）を中心に対応しています。エリア外の場合もまずはご相談ください。</p>
+    </details>
+    <details class="faq-item">
+      <summary>個人情報や見積書の写真はどう扱われますか？</summary>
+      <p>アップロードされた見積書は、診断のためにAIが読み取るほか、内容を確認できるよう当社の窓口にも通知として届きます。診断・ご連絡の目的以外には使用しません。お名前・ご住所が写っている場合は、黒塗りしてからのアップロードをおすすめしています。</p>
+    </details>
+    <details class="faq-item">
+      <summary>対応していないメーカー・機種の場合はどうなりますか？</summary>
+      <p>機種別のデータがない場合は、太陽光・蓄電池全体の相場と比較して判定します。機種別の判定に比べると精度は下がりますが、目安としてはご利用いただけます。</p>
+    </details>
+    <details class="faq-item">
+      <summary>写真がうまく読み取れなかったら？</summary>
+      <p>金額や容量が読み取れない場合は、その項目については「内訳の確認が必要」と表示されます。文字がはっきり写るよう撮り直していただくか、別の角度からもう一度お試しください。</p>
+    </details>
+    <details class="faq-item">
+      <summary>診断してもらったら、契約しないといけませんか？</summary>
+      <p>いいえ、診断結果を受け取るだけで完了です。ご相談フォームへ進むかどうかは任意で、そこから先も無理に契約を迫ることはありません。</p>
     </details>
   </div>
 </section>
@@ -910,6 +957,14 @@
     diagStatus.style.display = 'none';
     diagResult.style.display = 'block';
 
+    if(typeof fbq === 'function'){
+      fbq('trackCustom', 'DiagnosisComplete', {
+        has_battery: !!extracted?.has_battery,
+        solar_tier: verdict?.solarCheck?.tier || null,
+        battery_tier: verdict?.batteryCheck?.tier || null,
+      });
+    }
+
     const panels = [
       buildVerdictPanel('太陽光', 'kW', verdict.solarCheck),
       buildVerdictPanel('蓄電池', 'kWh', verdict.batteryCheck),
@@ -1029,6 +1084,10 @@
       });
       const json = await res.json();
       if(!res.ok) throw new Error(json.message || '送信に失敗しました。');
+
+      if(typeof fbq === 'function'){
+        fbq('track', 'Lead');
+      }
 
       diagResult.style.display = 'none';
       document.getElementById('thanksMsg').style.display = 'block';
