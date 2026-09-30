@@ -487,6 +487,16 @@
     .form-shell{padding:30px 20px;}
   }
 </style>
+<!-- Google Analytics (GA4) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-FLRMWH8J9F"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-FLRMWH8J9F');
+</script>
+<!-- End Google Analytics (GA4) -->
+
 <!-- Meta Pixel Code -->
 <script>
 !function(f,b,e,v,n,t,s)
@@ -964,6 +974,13 @@ src="https://www.facebook.com/tr?id=982150121582233&ev=PageView&noscript=1"
         battery_tier: verdict?.batteryCheck?.tier || null,
       });
     }
+    if(typeof gtag === 'function'){
+      gtag('event', 'diagnosis_complete', {
+        has_battery: !!extracted?.has_battery,
+        solar_tier: verdict?.solarCheck?.tier || null,
+        battery_tier: verdict?.batteryCheck?.tier || null,
+      });
+    }
 
     const panels = [
       buildVerdictPanel('太陽光', 'kW', verdict.solarCheck),
@@ -1087,6 +1104,9 @@ src="https://www.facebook.com/tr?id=982150121582233&ev=PageView&noscript=1"
 
       if(typeof fbq === 'function'){
         fbq('track', 'Lead');
+      }
+      if(typeof gtag === 'function'){
+        gtag('event', 'generate_lead');
       }
 
       diagResult.style.display = 'none';
