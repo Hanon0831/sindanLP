@@ -4,11 +4,17 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>診断の根拠｜見積書AI診断｜合同会社on</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Roboto+Mono:wght@500;700&display=swap" rel="stylesheet">
 <style>
+  /* Body text uses the device's built-in Japanese font (no web font download).
+     Web fonts kept: ONE heading weight (Noto Sans JP Bold, headings only) + tiny Latin-only Roboto Mono.
+     Noto Sans CJK JP: SIL Open Font License 1.1 / Roboto Mono: Apache License 2.0 */
+  @font-face{font-family:'Head JP';font-style:normal;font-weight:700;font-display:swap;src:url('on-asset-font-head-700-v2.woff2') format('woff2');}
+  @font-face{font-family:'Roboto Mono';font-style:normal;font-weight:500;font-display:swap;src:url('on-asset-font-robotomono-500-v2.woff2') format('woff2');}
+  @font-face{font-family:'Roboto Mono';font-style:normal;font-weight:700;font-display:swap;src:url('on-asset-font-robotomono-700-v2.woff2') format('woff2');}
   :root{
+    --font-sans:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Hiragino Kaku Gothic ProN","Noto Sans CJK JP","Noto Sans JP","Yu Gothic UI","Yu Gothic",Meiryo,sans-serif;
+    --font-head:"Head JP",var(--font-sans);
+    --font-serif:"Hiragino Mincho ProN","Yu Mincho","Noto Serif CJK JP","Noto Serif JP",serif;
     --navy:#234863; --blue:#4A7A9B; --blue-pale:#E4EEF2;
     --paper:#F6F8F7; --paper-card:#FFFFFF;
     --ink:#2B363B; --ink-soft:#5B6B70;
@@ -18,7 +24,7 @@
     --line:#DDE5E4; --radius:14px; --radius-sm:10px;
   }
   *{box-sizing:border-box;}
-  body{margin:0;font-family:'Noto Sans JP',sans-serif;background:var(--paper);color:var(--ink);line-height:1.85;}
+  body{margin:0;font-family:var(--font-sans);background:var(--paper);color:var(--ink);line-height:1.85;}
   .wrap{max-width:720px;margin:0 auto;padding:0 20px;}
   header{padding:20px 0;border-bottom:1px solid var(--line);background:var(--paper-card);}
   header .wrap{display:flex;align-items:center;gap:10px;font-weight:700;color:var(--navy);}
@@ -27,20 +33,20 @@
   header a.back:hover{text-decoration:underline;}
 
   .hero{padding:44px 0 8px;}
-  .hero .eyebrow{font-family:'Roboto Mono',monospace;font-size:0.72rem;letter-spacing:0.1em;color:var(--blue);text-transform:uppercase;margin-bottom:14px;}
+  .hero .eyebrow{font-family:'Roboto Mono',var(--font-sans);font-size:0.72rem;letter-spacing:0.1em;color:var(--blue);text-transform:uppercase;margin-bottom:14px;}
   .hero h1{font-size:1.55rem;color:var(--navy);margin:0 0 12px;font-weight:900;line-height:1.5;}
   .hero p{color:var(--ink-soft);font-size:0.92rem;margin:0;max-width:56ch;}
 
   section{padding:32px 0;border-top:1px solid var(--line);}
   section:first-of-type{border-top:none;}
   h2{font-size:1.08rem;color:var(--navy);margin:0 0 14px;font-weight:900;}
-  h2 .num{font-family:'Roboto Mono',monospace;color:var(--red);margin-right:8px;}
+  h2 .num{font-family:'Roboto Mono',var(--font-sans);color:var(--red);margin-right:8px;}
   p{color:var(--ink-soft);font-size:0.92rem;}
 
   .rate-card{background:var(--paper-card);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px;margin-top:14px;}
   .rate-card .rate-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
   .rate-card .rate-label{font-weight:700;color:var(--navy);font-size:0.94rem;}
-  .rate-card .rate-value{font-family:'Roboto Mono',monospace;font-weight:700;font-size:1.3rem;color:var(--ink);}
+  .rate-card .rate-value{font-family:'Roboto Mono',var(--font-sans);font-weight:700;font-size:1.3rem;color:var(--ink);}
   .rate-card .source-tag{display:inline-block;font-size:0.68rem;font-weight:700;padding:4px 10px;border-radius:999px;}
   .source-official{background:var(--green-pale);color:var(--green);}
   .source-market{background:var(--amber-pale);color:var(--amber);}

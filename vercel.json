@@ -1,5 +1,13 @@
 {
   "rewrites": [
     { "source": "/", "destination": "/on-mitsumori-shindan-lp.html" }
+  ],
+  "headers": [
+    {
+      "source": "/on-asset-(.*)",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
+      ]
+    }
   ]
 }
