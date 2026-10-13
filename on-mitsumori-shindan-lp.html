@@ -496,6 +496,40 @@
     .hero h1{font-size:1.4rem;}
     .form-shell{padding:30px 20px;}
   }
+
+  /* ---------- 改善追加分 ---------- */
+  .sample-card{max-width:640px;margin:0 auto 40px;background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:22px 22px 18px;box-shadow:0 10px 24px -18px rgba(44,74,102,0.4);}
+  .sample-tag{display:inline-block;font-size:0.7rem;font-weight:700;color:var(--ink-soft);border:1px solid var(--line);border-radius:999px;padding:3px 10px;margin-bottom:12px;}
+  .sample-head{display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+  .sample-head .verdict-badge{font-size:0.95rem;padding:6px 14px;}
+  .sample-price{font-family:'Roboto Mono',var(--font-sans,sans-serif);font-size:0.82rem;color:var(--ink-soft);}
+  .sample-list{margin:14px 0 0;padding:0;list-style:none;}
+  .sample-list li{display:flex;gap:8px;font-size:0.84rem;color:var(--ink);padding:6px 0;border-top:1px dashed var(--line);}
+  .sample-list li::before{content:"!";flex:none;width:18px;height:18px;border-radius:50%;background:var(--amber-pale);color:var(--amber);font-weight:900;font-size:0.7rem;display:flex;align-items:center;justify-content:center;margin-top:3px;}
+  .sample-foot{font-size:0.72rem;color:var(--ink-soft);margin-top:10px;}
+
+  .nq-toggle{display:block;width:100%;margin-top:22px;background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:14px 16px;text-align:left;font-size:0.88rem;font-weight:700;color:var(--navy);}
+  .nq-toggle span{display:block;font-size:0.76rem;font-weight:400;color:var(--ink-soft);margin-top:2px;}
+  .nq-box{display:none;margin-top:12px;background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:20px 18px;}
+  .nq-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  .nq-row label{display:block;font-size:0.78rem;font-weight:700;color:var(--navy);margin-bottom:6px;}
+  .nq-row select{width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:var(--radius-sm);background:#fff;font-family:inherit;font-size:0.92rem;color:var(--ink);}
+  .nq-result{display:none;margin-top:16px;background:#fff;border:1px solid var(--line);border-radius:var(--radius-sm);padding:16px;}
+  .nq-line{display:flex;justify-content:space-between;gap:12px;font-size:0.86rem;padding:6px 0;border-bottom:1px dashed var(--line);}
+  .nq-line:last-of-type{border-bottom:none;}
+  .nq-line b{font-family:'Roboto Mono',var(--font-sans,sans-serif);color:var(--navy);white-space:nowrap;}
+  .nq-total{margin-top:10px;background:var(--blue-pale);border-radius:var(--radius-sm);padding:12px 14px;font-size:0.88rem;color:var(--navy);}
+  .nq-total b{font-size:1.15rem;}
+  .nq-high{display:block;margin-top:4px;font-size:0.8rem;color:var(--amber);}
+  .nq-note{font-size:0.72rem;color:var(--ink-soft);margin-top:10px;line-height:1.7;}
+  .nq-cta{margin-top:14px;text-align:center;}
+  .nq-cta p{font-size:0.84rem;color:var(--ink-soft);margin:0 0 10px;}
+  @media(max-width:420px){.nq-row{grid-template-columns:1fr;}}
+
+  .diag-cta h4{margin:0 0 8px;font-size:1rem;color:var(--navy);}
+  .contact-pref{display:flex;gap:8px;flex-wrap:wrap;}
+  .contact-pref label{display:flex;align-items:center;gap:6px;font-size:0.86rem;font-weight:500;color:var(--ink);border:1px solid var(--line);border-radius:999px;padding:8px 14px;background:var(--paper);cursor:pointer;margin:0;}
+  .contact-pref input{accent-color:var(--red);margin:0;}
 </style>
 <!-- Google Analytics (GA4) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-FLRMWH8J9F"></script>
@@ -561,7 +595,7 @@ src="https://www.facebook.com/tr?id=982150121582233&ev=PageView&noscript=1"
         <button class="btn-primary" onclick="document.getElementById('apply').scrollIntoView()">写真を送って無料AI診断を依頼する</button>
         <a class="hero-flow-link" href="#flow">診断の流れを見る</a>
       </div>
-      <div class="hero-note">完全無料 ／ 契約義務なし ／ 関東エリア対応</div>
+      <div class="hero-note">完全無料 ／ 契約義務なし ／ 東京・神奈川対応</div>
       <div class="trust-strip">
         <div class="item"><svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="1.6"/><path d="M6 10.5l2.5 2.5L14 7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>個人情報は診断目的以外に使いません</div>
         <div class="item"><svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="1.6"/><path d="M6 10.5l2.5 2.5L14 7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>しつこい営業はしません</div>
@@ -609,6 +643,19 @@ src="https://www.facebook.com/tr?id=982150121582233&ev=PageView&noscript=1"
       <p>会員登録・電話番号の入力は不要です。当社から電話をかけることもありません。</p>
     </div>
 
+    <div class="sample-card" aria-label="診断結果の見本">
+      <div class="sample-tag">診断結果の見本（イメージ）</div>
+      <div class="sample-head">
+        <div class="verdict-badge verdict-high">太陽光：相場より高め</div>
+        <div class="sample-price">約38.5万円/kW（基準 28.9万円/kW）</div>
+      </div>
+      <ul class="sample-list">
+        <li>kW単価が基準の約1.3倍です。値引き前の金額が高く設定されていないか確認しましょう</li>
+        <li>保証年数の記載が見当たりません。契約前に書面で確認しましょう</li>
+      </ul>
+      <div class="sample-foot">写真を送ると、このような判定がその場で表示されます。</div>
+    </div>
+
     <form class="form-shell" id="quoteForm" onsubmit="return false;">
       <div id="uploadStage">
         <div class="field">
@@ -627,13 +674,47 @@ src="https://www.facebook.com/tr?id=982150121582233&ev=PageView&noscript=1"
           <span><svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="1.6"/><path d="M6 10.5l2.5 2.5L14 7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>電話番号不要</span>
           <span><svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="1.6"/><path d="M6 10.5l2.5 2.5L14 7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>完全無料</span>
         </div>
-        <div class="redact-note">お名前・ご住所が写っている場合は、黒塗りしてからアップロードすることをおすすめします。診断に必要なのは設備の容量と金額の内訳です。</div>
 
         <div class="submit-row">
           <button type="button" class="btn-submit" id="submitBtn" disabled>この見積書をAI診断する</button>
         </div>
         <div class="diag-error" id="diagError"></div>
         <p class="form-legal">アップロードされた見積書は、診断の目的以外には使用しません。</p>
+
+        <button type="button" class="nq-toggle" id="nqToggle" aria-expanded="false" aria-controls="nqBox">見積書が手元にない方はこちら ›<span>容量を選ぶだけで、工事費込みの相場の目安がわかります</span></button>
+        <div class="nq-box" id="nqBox">
+          <div class="nq-row">
+            <div>
+              <label for="nqSolar">太陽光の容量</label>
+              <select id="nqSolar">
+                <option value="0">つけない／未定</option>
+                <option value="3">3kW</option>
+                <option value="4">4kW</option>
+                <option value="5" selected>5kW</option>
+                <option value="6">6kW</option>
+                <option value="7">7kW</option>
+                <option value="8">8kW</option>
+                <option value="10">10kW</option>
+              </select>
+            </div>
+            <div>
+              <label for="nqBattery">蓄電池の容量</label>
+              <select id="nqBattery">
+                <option value="0">つけない／未定</option>
+                <option value="5">5kWh前後</option>
+                <option value="7">7kWh前後</option>
+                <option value="10" selected>10kWh前後</option>
+                <option value="12">12kWh前後</option>
+                <option value="16">16kWh前後</option>
+              </select>
+            </div>
+          </div>
+          <div class="nq-result" id="nqResult" aria-live="polite"></div>
+          <div class="nq-cta" id="nqCta" style="display:none;">
+            <p>ご自宅の条件で正式な見積もりが欲しい方へ。当社で無料でお出しします。</p>
+            <button type="button" class="btn-submit" id="nqConsultBtn" style="width:auto;padding:14px 30px;">無料で正式な見積もりを依頼する</button>
+          </div>
+        </div>
       </div>
 
       <div class="diag-status" id="diagStatus">
@@ -659,34 +740,44 @@ src="https://www.facebook.com/tr?id=982150121582233&ev=PageView&noscript=1"
         <div class="kijun-link"><a href="shindan-kijun.html" target="_blank" rel="noopener">この判定は何を基準にしていますか？ → 診断の根拠を見る</a></div>
 
         <div class="diag-cta">
-          <p>結果についてもっと詳しく相談したい方は、こちらからご連絡ください。しつこい営業はしません。</p>
+          <h4 id="ctaHead">この結果について、無料で相談できます</h4>
+          <p id="ctaText">結果についてもっと詳しく相談したい方は、こちらからご連絡ください。しつこい営業はしません。</p>
           <button type="button" class="btn-submit" id="openConsultBtn" style="width:auto;padding:14px 30px;">この内容について無料相談する</button>
         </div>
 
-        <div class="consult-form" id="consultForm">
-          <div class="field">
-            <label for="nameInput">お名前</label>
-            <input type="text" id="nameInput" placeholder="山田 太郎">
-          </div>
-          <div class="field">
-            <label for="telInput">電話番号</label>
-            <input type="tel" id="telInput" placeholder="090-1234-5678">
-          </div>
-          <div class="field">
-            <label for="emailInput">メールアドレス <span class="hint">任意</span></label>
-            <input type="email" id="emailInput" placeholder="example@mail.com">
-          </div>
-          <div class="field">
-            <label for="noteInput">気になっている点 <span class="hint">任意</span></label>
-            <textarea id="noteInput" placeholder="例：単価が高い気がする／契約を急かされている　など"></textarea>
-          </div>
-          <div class="submit-row">
-            <button type="button" class="btn-submit" id="consultSubmitBtn">この内容で相談する</button>
-          </div>
-          <div class="diag-error" id="consultError"></div>
-        </div>
-
         <button type="button" class="diag-reset" id="resetBtn">別の見積書をもう一度診断する</button>
+      </div>
+
+      <div class="consult-form" id="consultForm">
+        <div class="field">
+          <label for="nameInput">お名前</label>
+          <input type="text" id="nameInput" placeholder="山田 太郎" autocomplete="name">
+        </div>
+        <div class="field">
+          <label>ご希望の連絡方法</label>
+          <div class="contact-pref">
+            <label><input type="radio" name="contactPref" value="email" checked>メール</label>
+            <label><input type="radio" name="contactPref" value="phone">電話</label>
+            <label><input type="radio" name="contactPref" value="any">どちらでも</label>
+          </div>
+        </div>
+        <div class="field">
+          <label for="emailInput">メールアドレス <span class="hint" id="emailHint">必須</span></label>
+          <input type="email" id="emailInput" placeholder="example@mail.com" autocomplete="email">
+        </div>
+        <div class="field">
+          <label for="telInput">電話番号 <span class="hint" id="telHint">任意</span></label>
+          <input type="tel" id="telInput" placeholder="090-1234-5678" autocomplete="tel">
+        </div>
+        <div class="field">
+          <label for="noteInput">気になっている点 <span class="hint">任意</span></label>
+          <textarea id="noteInput" placeholder="例：単価が高い気がする／契約を急かされている　など"></textarea>
+        </div>
+        <div class="submit-row">
+          <button type="button" class="btn-submit" id="consultSubmitBtn">この内容で相談する</button>
+        </div>
+        <p class="form-legal">電話をご希望の場合を除き、当社からお電話することはありません。</p>
+        <div class="diag-error" id="consultError"></div>
       </div>
 
       <div class="thanks" id="thanksMsg">
@@ -769,8 +860,8 @@ src="https://www.facebook.com/tr?id=982150121582233&ev=PageView&noscript=1"
     <div class="trust-grid">
       <div class="trust-card">
         <div class="trust-label">対応エリア</div>
-        <div class="trust-num mono">関東一円</div>
-        <div class="trust-sub">東京・神奈川・埼玉・千葉 など</div>
+        <div class="trust-num mono">東京・神奈川</div>
+        <div class="trust-sub">その他の地域もまずはご相談ください</div>
       </div>
       <div class="trust-card">
         <div class="trust-label">診断費用</div>
@@ -842,11 +933,11 @@ src="https://www.facebook.com/tr?id=982150121582233&ev=PageView&noscript=1"
     </details>
     <details class="faq-item">
       <summary>対応エリアはどこですか？</summary>
-      <p>関東エリア（東京・神奈川・埼玉・千葉など）を中心に対応しています。エリア外の場合もまずはご相談ください。</p>
+      <p>東京都・神奈川県を中心に対応しています。その他の地域の場合も、まずはご相談ください。</p>
     </details>
     <details class="faq-item">
       <summary>個人情報や見積書の写真はどう扱われますか？</summary>
-      <p>アップロードされた見積書は、診断のためにAIが読み取るほか、内容を確認できるよう当社の窓口にも通知として届きます。診断・ご連絡の目的以外には使用しません。お名前・ご住所が写っている場合は、黒塗りしてからのアップロードをおすすめしています。</p>
+      <p>アップロードされた見積書は、診断のためにAIが読み取るほか、内容を確認できるよう当社の窓口にも通知として届きます。診断・ご連絡の目的以外には使用しません。お名前・ご住所が写ったままでも診断できますが、気になる方は隠してからアップロードしてください。</p>
     </details>
     <details class="faq-item">
       <summary>対応していないメーカー・機種の場合はどうなりますか？</summary>
@@ -928,6 +1019,7 @@ src="https://www.facebook.com/tr?id=982150121582233&ev=PageView&noscript=1"
     if(!selectedFile) return;
     hideDiagError();
     uploadStage.style.display = 'none';
+    document.getElementById('consultForm').style.display = 'none';
     diagStatus.style.display = 'block';
 
     try{
@@ -1072,13 +1164,115 @@ src="https://www.facebook.com/tr?id=982150121582233&ev=PageView&noscript=1"
         `<div class="flag-item flag-${f.level}"><div class="flag-icon">${f.level==='warn'?'!':'i'}</div><div>${f.message}</div></div>`
       ).join('');
     }
+
+    setDiagCta(verdict);
   }
 
-  // ---- Optional human consult (after seeing the AI result) ----
-  document.getElementById('openConsultBtn').addEventListener('click', () => {
+  // ---- 判定に応じて「次の一歩」の文言を変える ----
+  function setDiagCta(verdict){
+    const tiers = [verdict?.solarCheck, verdict?.batteryCheck]
+      .filter(c => c && c.applicable).map(c => c.tier);
+    const head = document.getElementById('ctaHead');
+    const text = document.getElementById('ctaText');
+    const btn = document.getElementById('openConsultBtn');
+    if(tiers.includes('high') || tiers.includes('needs_check')){
+      head.textContent = '契約前に、当社の見積もりと比べてみませんか';
+      text.textContent = '同じ設備で当社ならいくらになるか、正式な見積もりを無料でお出しします。比べるだけでも大丈夫です。しつこい営業はしません。';
+      btn.textContent = '当社の無料見積もりと比べる';
+    }else if(tiers.length && tiers.every(t => t === 'cheap' || t === 'within_range')){
+      head.textContent = '金額は相場の範囲です。工事内容や保証も確認しませんか';
+      text.textContent = '金額以外に、工事内容・保証・補助金の使い方で差が出ることがあります。気になる点を無料で確認します。';
+      btn.textContent = '工事内容・保証を無料で確認する';
+    }else{
+      head.textContent = '読み取れなかった部分は、担当者が確認します';
+      text.textContent = '見積書の内容を担当者が直接見て、相場と比べた結果をお伝えします。無料です。';
+      btn.textContent = '担当者に無料で確認してもらう';
+    }
+  }
+
+  // ---- 見積書がない方向けの相場チェック（基準は「診断の根拠」ページと同じ値） ----
+  const NQ_SOLAR_PER_KW = 28.9;     // 万円/kW
+  const NQ_BATTERY_PER_KWH = 17.2;  // 万円/kWh
+  const NQ_HIGH_RATIO = 1.2;        // これ以上で「相場より高め」
+  let consultSource = 'diagnosis';
+  let nqData = null;
+
+  const nqToggle = document.getElementById('nqToggle');
+  const nqBox = document.getElementById('nqBox');
+  nqToggle.addEventListener('click', () => {
+    const open = nqBox.style.display !== 'block';
+    nqBox.style.display = open ? 'block' : 'none';
+    nqToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+    if(open){
+      renderNq();
+      if(typeof gtag === 'function') gtag('event', 'no_quote_checker_open');
+      if(typeof fbq === 'function') fbq('trackCustom', 'NoQuoteCheckerOpen');
+    }
+  });
+  document.getElementById('nqSolar').addEventListener('change', renderNq);
+  document.getElementById('nqBattery').addEventListener('change', renderNq);
+
+  function man(v){ return Math.round(v).toLocaleString(); }
+
+  function renderNq(){
+    const kw = Number(document.getElementById('nqSolar').value);
+    const kwh = Number(document.getElementById('nqBattery').value);
+    const resultEl = document.getElementById('nqResult');
+    const ctaEl = document.getElementById('nqCta');
+    if(!kw && !kwh){
+      resultEl.innerHTML = '<div class="nq-note">太陽光か蓄電池の容量を選んでください。</div>';
+      resultEl.style.display = 'block';
+      ctaEl.style.display = 'none';
+      nqData = null;
+      return;
+    }
+    const solar = kw * NQ_SOLAR_PER_KW;
+    const battery = kwh * NQ_BATTERY_PER_KWH;
+    const total = solar + battery;
+    let lines = '';
+    if(kw) lines += `<div class="nq-line"><span>太陽光 ${kw}kW</span><b>約${man(solar)}万円</b></div>`;
+    if(kwh) lines += `<div class="nq-line"><span>蓄電池 ${kwh}kWh前後</span><b>約${man(battery)}万円</b></div>`;
+    const notes = ['工事費込みのおおよその目安です。屋根の形や足場の有無、機種によって変わります。'];
+    if(kw) notes.push('太陽光は国の公表データ（新築住宅の平均）が基準です。既存のお住まいへの設置は、これより高くなることがあります。');
+    if(kwh && kwh <= 7) notes.push('蓄電池は容量が小さいほど、1kWhあたりの単価が高くなりやすい傾向があります。');
+    resultEl.innerHTML = `${lines}
+      <div class="nq-total">合計の目安　<b>約${man(total)}万円</b>
+        <span class="nq-high">約${man(total * NQ_HIGH_RATIO)}万円を超える見積もりは「高め」の可能性があります</span>
+      </div>
+      <div class="nq-note">${notes.join('<br>')}　<a href="shindan-kijun.html" target="_blank" rel="noopener">基準の出典を見る</a></div>`;
+    resultEl.style.display = 'block';
+    ctaEl.style.display = 'block';
+    nqData = { source: 'no_quote_checker', solar_capacity_kw: kw || null, battery_capacity_kwh: kwh || null, has_battery: !!kwh, estimate_man_yen: Math.round(total) };
+  }
+
+  document.getElementById('nqConsultBtn').addEventListener('click', () => {
+    consultSource = 'no_quote_checker';
+    openConsult();
+  });
+
+  function openConsult(){
     const cf = document.getElementById('consultForm');
     cf.style.display = 'block';
     cf.scrollIntoView({behavior:'smooth', block:'center'});
+  }
+
+  // ---- 連絡方法に応じて必須表示を切り替え ----
+  function getContactPref(){
+    const el = document.querySelector('input[name="contactPref"]:checked');
+    return el ? el.value : 'email';
+  }
+  function updatePrefHints(){
+    const pref = getContactPref();
+    document.getElementById('emailHint').textContent = pref === 'email' ? '必須' : (pref === 'any' ? 'どちらか必須' : '任意');
+    document.getElementById('telHint').textContent = pref === 'phone' ? '必須' : (pref === 'any' ? 'どちらか必須' : '任意');
+  }
+  document.querySelectorAll('input[name="contactPref"]').forEach(r => r.addEventListener('change', updatePrefHints));
+  updatePrefHints();
+
+  // ---- Optional human consult (after seeing the AI result) ----
+  document.getElementById('openConsultBtn').addEventListener('click', () => {
+    consultSource = 'diagnosis';
+    openConsult();
   });
 
   const consultSubmitBtn = document.getElementById('consultSubmitBtn');
@@ -1091,8 +1285,14 @@ src="https://www.facebook.com/tr?id=982150121582233&ev=PageView&noscript=1"
     const consultError = document.getElementById('consultError');
     consultError.style.display = 'none';
 
-    if(!name || !tel){
-      consultError.textContent = 'お名前と電話番号をご入力ください。';
+    const contactPref = getContactPref();
+    let missing = '';
+    if(!name) missing = 'お名前をご入力ください。';
+    else if(contactPref === 'email' && !email) missing = 'メールアドレスをご入力ください。';
+    else if(contactPref === 'phone' && !tel) missing = '電話番号をご入力ください。';
+    else if(contactPref === 'any' && !email && !tel) missing = 'メールアドレスか電話番号のどちらかをご入力ください。';
+    if(missing){
+      consultError.textContent = missing;
       consultError.style.display = 'block';
       return;
     }
@@ -1111,9 +1311,12 @@ src="https://www.facebook.com/tr?id=982150121582233&ev=PageView&noscript=1"
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          name, tel, email, note,
-          extracted: lastDiagnosis?.extracted || null,
-          verdict: lastDiagnosis?.verdict || null,
+          name, tel, email,
+          note,
+          contactPref,
+          source: consultSource,
+          extracted: consultSource === 'no_quote_checker' ? nqData : (lastDiagnosis?.extracted || null),
+          verdict: consultSource === 'no_quote_checker' ? null : (lastDiagnosis?.verdict || null),
         }),
       });
       const json = await res.json();
@@ -1123,10 +1326,12 @@ src="https://www.facebook.com/tr?id=982150121582233&ev=PageView&noscript=1"
         fbq('track', 'Lead');
       }
       if(typeof gtag === 'function'){
-        gtag('event', 'generate_lead');
+        gtag('event', 'generate_lead', { lead_source: consultSource });
       }
 
       diagResult.style.display = 'none';
+      uploadStage.style.display = 'none';
+      document.getElementById('consultForm').style.display = 'none';
       document.getElementById('thanksMsg').style.display = 'block';
       document.getElementById('thanksMsg').scrollIntoView({behavior:'smooth', block:'center'});
     }catch(err){
@@ -1149,6 +1354,7 @@ src="https://www.facebook.com/tr?id=982150121582233&ev=PageView&noscript=1"
     consultSubmitBtn.textContent = 'この内容で相談する';
     diagResult.style.display = 'none';
     uploadStage.style.display = 'block';
+    consultSource = 'diagnosis';
   });
 </script>
 
