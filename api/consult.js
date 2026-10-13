@@ -38,18 +38,28 @@ export default async function handler(req, res) {
     return;
   }
 
-  const { name, tel, email, note, extracted, verdict } = req.body || {};
+  const { name, tel, email, note, extracted, verdict, contactPref, source } = req.body || {};
   const isValidEmail = (e) => typeof e === "string" && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e.trim());
+  const hasTel = typeof tel === "string" && tel.trim() !== "";
+  const hasEmail = isValidEmail(email);
 
-  if (!name || !tel) {
-    res.status(400).json({ error: "bad_request", message: "お名前と電話番号を入力してください。" });
+  // 連絡方法に応じた必須チェック（未指定＝旧フォームは従来どおり電話必須）
+  const pref = ["email", "phone", "any"].includes(contactPref) ? contactPref : "phone";
+  let missing = "";
+  if (!name) missing = "お名前を入力してください。";
+  else if (pref === "email" && !hasEmail) missing = "メールアドレスを入力してください。";
+  else if (pref === "phone" && !hasTel) missing = "電話番号を入力してください。";
+  else if (pref === "any" && !hasEmail && !hasTel) missing = "メールアドレスか電話番号のどちらかを入力してください。";
+  if (missing) {
+    res.status(400).json({ error: "bad_request", message: missing });
     return;
   }
+  const isNoQuote = source === "no_quote_checker";
 
   const fromEmail = process.env.NOTIFY_FROM_EMAIL || "onboarding@resend.dev";
 
   try {
-    const html = buildHtml({ name, tel, email, note, extracted, verdict });
+    const html = buildHtml({ name, tel, email, note, extracted, verdict, pref, isNoQuote });
 
     const resp = await fetch("https://api.resend.com/emails", {
       method: "POST",
@@ -61,7 +71,7 @@ export default async function handler(req, res) {
         from: fromEmail,
         to: [toEmail],
         reply_to: isValidEmail(email) ? email.trim() : undefined,
-        subject: `【無料相談】${escapeHtml(name)} 様よりお問い合わせ`,
+        subject: `${isNoQuote ? "【見積もり依頼・見積書なし】" : "【無料相談】"}${escapeHtml(name)} 様（${{ email: "メール希望", phone: "電話希望", any: "連絡方法おまかせ" }[pref]}）`,
         html,
       }),
     });
@@ -88,7 +98,8 @@ function escapeHtml(s) {
     .replace(/"/g, "&quot;");
 }
 
-function buildHtml({ name, tel, email, note, extracted, verdict }) {
+function buildHtml({ name, tel, email, note, extracted, verdict, pref, isNoQuote }) {
+  const prefLabel = { email: "メール", phone: "電話", any: "どちらでも" }[pref] || "—";
   const solarLine = verdict?.solarCheck?.applicable
     ? `太陽光: ${verdictLabels[verdict.solarCheck.tier] || "—"}${
         verdict.solarCheck.unitPrice ? `（${Math.round(verdict.solarCheck.unitPrice / 10000)}万円/kW）` : "（内訳不明）"
@@ -102,16 +113,46 @@ function buildHtml({ name, tel, email, note, extracted, verdict }) {
 
   const e = extracted || {};
 
+  if (isNoQuote) {
+    return `
+    <h2 style="font-family:sans-serif;">見積もり依頼がありました（見積書なし・相場チェックから）</h2>
+
+    <h3 style="font-family:sans-serif;">お客様情報</h3>
+    <table cellpadding="6" style="border-collapse:collapse;font-family:sans-serif;font-size:14px;">
+      <tr><td style="background:#f2f2f2;">お名前</td><td><b>${escapeHtml(name)}</b></td></tr>
+      <tr><td style="background:#f2f2f2;">希望の連絡方法</td><td><b>${prefLabel}</b></td></tr>
+      <tr><td style="background:#f2f2f2;">電話番号</td><td><b>${escapeHtml(tel) || "—"}</b></td></tr>
+      <tr><td style="background:#f2f2f2;">メール</td><td>${escapeHtml(email) || "—"}</td></tr>
+      <tr><td style="background:#f2f2f2;">気になっている点</td><td>${escapeHtml(note).replace(/\n/g, "<br>") || "—"}</td></tr>
+    </table>
+    ${pref === "email" ? '<p style="font-family:sans-serif;font-size:14px;color:#c2603a;"><b>※メールでの連絡を希望されています。お電話はお控えください。</b></p>' : ""}
+
+    <h3 style="font-family:sans-serif;">相場チェックで選んだ内容</h3>
+    <table cellpadding="6" style="border-collapse:collapse;font-family:sans-serif;font-size:14px;">
+      <tr><td style="background:#f2f2f2;">太陽光容量</td><td>${e.solar_capacity_kw ? e.solar_capacity_kw + " kW" : "つけない／未定"}</td></tr>
+      <tr><td style="background:#f2f2f2;">蓄電池容量</td><td>${e.battery_capacity_kwh ? e.battery_capacity_kwh + " kWh前後" : "つけない／未定"}</td></tr>
+      <tr><td style="background:#f2f2f2;">画面に表示した目安</td><td>${e.estimate_man_yen ? "約" + Number(e.estimate_man_yen).toLocaleString() + "万円" : "—"}</td></tr>
+    </table>
+
+    <p style="color:#888;font-size:12px;font-family:sans-serif;">
+      送信日時: ${new Date().toLocaleString("ja-JP", { timeZone: "Asia/Tokyo" })}<br>
+      ※見積書はまだお持ちでない方からの依頼です。
+    </p>
+  `;
+  }
+
   return `
     <h2 style="font-family:sans-serif;">無料相談のお申し込みがありました</h2>
 
     <h3 style="font-family:sans-serif;">お客様情報</h3>
     <table cellpadding="6" style="border-collapse:collapse;font-family:sans-serif;font-size:14px;">
       <tr><td style="background:#f2f2f2;">お名前</td><td><b>${escapeHtml(name)}</b></td></tr>
-      <tr><td style="background:#f2f2f2;">電話番号</td><td><b>${escapeHtml(tel)}</b></td></tr>
+      <tr><td style="background:#f2f2f2;">希望の連絡方法</td><td><b>${prefLabel}</b></td></tr>
+      <tr><td style="background:#f2f2f2;">電話番号</td><td><b>${escapeHtml(tel) || "—"}</b></td></tr>
       <tr><td style="background:#f2f2f2;">メール</td><td>${escapeHtml(email) || "—"}</td></tr>
-      <tr><td style="background:#f2f2f2;">気になっている点</td><td>${escapeHtml(note) || "—"}</td></tr>
+      <tr><td style="background:#f2f2f2;">気になっている点</td><td>${escapeHtml(note).replace(/\n/g, "<br>") || "—"}</td></tr>
     </table>
+    ${pref === "email" ? '<p style="font-family:sans-serif;font-size:14px;color:#c2603a;"><b>※メールでの連絡を希望されています。お電話はお控えください。</b></p>' : ""}
 
     <h3 style="font-family:sans-serif;">このお客様の診断結果</h3>
     <p style="font-family:sans-serif;font-size:14px;"><b>${solarLine}</b><br><b>${batteryLine}</b></p>
