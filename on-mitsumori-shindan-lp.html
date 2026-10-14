@@ -257,6 +257,11 @@
   .step-icon{position:relative;width:72px;height:72px;margin:0 auto 8px;display:flex;align-items:center;justify-content:center;color:var(--navy);}
   .step-icon svg{width:52px;height:52px;}
   .step-num{position:absolute;top:-4px;left:-10px;width:28px;height:28px;border-radius:50%;background:var(--red);color:#fff;font-weight:900;font-size:0.9rem;display:flex;align-items:center;justify-content:center;}
+  .steps-total{display:flex;align-items:center;justify-content:center;gap:8px;width:fit-content;margin:-10px auto 26px;background:#fff;border:1px solid var(--line);border-radius:999px;padding:8px 18px;font-size:0.9rem;color:var(--navy);font-weight:700;box-shadow:var(--shadow);}
+  .steps-total svg{width:18px;height:18px;color:var(--red);flex:none;}
+  .steps-total b{color:var(--red);font-size:1.15rem;font-weight:900;}
+  .step-time{display:inline-block;margin-top:6px;background:var(--red-pale);color:var(--red-dark);font-size:0.74rem;font-weight:800;padding:2px 10px;border-radius:999px;}
+  .step-time.free{background:var(--green-pale);color:var(--green);}
   .step h3{font-size:0.98rem;font-weight:900;}
   .step p{margin:4px 0 0;font-size:0.78rem;color:var(--ink-soft);line-height:1.7;}
 
@@ -325,6 +330,8 @@
     .step-icon svg{width:42px;height:42px;}
     .step h3{font-size:0.86rem;}
     .step p{font-size:0.72rem;}
+    .steps-total{font-size:0.82rem;padding:7px 14px;}
+    .step-time{font-size:0.68rem;padding:2px 8px;}
     .final h2{font-size:1.4rem;}
     .basis a{grid-template-columns:44px 1fr auto;gap:12px;}
     .basis-icon{width:44px;height:44px;}
@@ -767,22 +774,26 @@ src="https://www.facebook.com/tr?id=982150121582233&ev=PageView&noscript=1"
 <section class="block tint" id="flow">
   <div class="wrap narrow">
     <h2 class="slash-head">かんたん3ステップで診断できます</h2>
+    <p class="steps-total"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="8" fill="none" stroke="currentColor" stroke-width="2"/><path d="M10 5.5V10l3 2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>写真を選んでから結果が出るまで、<b>約1分</b></p>
     <div class="steps">
       <div class="step">
         <div class="step-icon"><span class="step-num">1</span><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><path d="M10 4h18l8 8v18"/><path d="M28 4v8h8"/><path d="M10 4v38h16"/><path d="M16 18h12M16 24h12M16 30h8"/><circle cx="35" cy="36" r="8" fill="#3E8FD1" stroke="#3E8FD1"/><path d="M35 40v-8M31.5 35.5L35 32l3.5 3.5" stroke="#fff"/></svg></div>
         <h3>写真を送る</h3>
+        <span class="step-time">約20秒</span>
         <p>見積書の写真や<br>PDFをアップロード</p>
       </div>
       <div class="step-arrow" aria-hidden="true">›</div>
       <div class="step">
         <div class="step-icon"><span class="step-num">2</span><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><path d="M24 9c-2-4-9-4-10 1-5 0-7 6-4 9-3 3-1 9 3 9 0 5 6 7 9 4l2-1V9z"/><path d="M24 9c2-4 9-4 10 1 5 0 7 6 4 9 3 3 1 9-3 9 0 5-6 7-9 4l-2-1"/><path d="M24 9v23M18 16h3v5M30 16h-3v5M17 26h4M31 26h-4"/><path d="M20 36v6M28 36v6"/></svg></div>
         <h3>AIが診断</h3>
+        <span class="step-time">約30秒</span>
         <p>価格の目安や<br>確認ポイントを分析</p>
       </div>
       <div class="step-arrow" aria-hidden="true">›</div>
       <div class="step">
         <div class="step-icon"><span class="step-num">3</span><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><circle cx="17" cy="20" r="7"/><path d="M5 42c0-7 5-12 12-12s12 5 12 12"/><path d="M27 5h16a2 2 0 012 2v10a2 2 0 01-2 2h-9l-5 4v-4h-2a2 2 0 01-2-2V7a2 2 0 012-2z"/><path d="M31 12h.01M35 12h.01M39 12h.01" stroke-width="3"/></svg></div>
         <h3>必要なら相談</h3>
+        <span class="step-time free">ここからは任意</span>
         <p>気になる点は<br>専門スタッフに相談可能</p>
       </div>
     </div>
