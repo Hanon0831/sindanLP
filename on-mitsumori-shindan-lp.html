@@ -990,7 +990,9 @@ src="https://www.facebook.com/tr?id=982150121582233&ev=PageView&noscript=1"
   document.querySelector('.header-cta')?.addEventListener('click', () => trackOnce('HeaderCtaClick', 'header_cta_click'));
   if('IntersectionObserver' in window){
     const io = new IntersectionObserver((entries) => {
-      entries.forEach(e => { if(e.isIntersecting){ trackOnce('ReachUpload', 'reach_upload'); io.disconnect(); } });
+      entries.forEach(e => { if(e.isIntersecting){
+        if(!sentEvents.ReachUpload && typeof fbq === 'function') fbq('track', 'ViewContent', { content_name: 'upload_section' });
+        trackOnce('ReachUpload', 'reach_upload'); io.disconnect(); } });
     }, { threshold: 0.4 });
     io.observe(document.getElementById('uploadBox'));
   }
