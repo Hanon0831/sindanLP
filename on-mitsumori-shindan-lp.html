@@ -534,6 +534,12 @@
     .hero-note{margin-top:10px;}
   }
   @media (max-width:380px){ .hero h1.hero-title{font-size:1.32rem;} }
+  /* 紺色の帯は押せるボタンに（タップでアップロード欄へ） */
+  .hero .badge-box{border:none;cursor:pointer;font-family:inherit;width:100%;transition:transform .15s ease,box-shadow .15s ease;}
+  @media(min-width:900px){.hero .badge-box{width:auto;}}
+  .hero .badge-box:hover{transform:translateY(-2px);box-shadow:0 16px 28px -12px rgba(44,74,102,0.6);}
+  .hero .badge-box:active{transform:translateY(1px);}
+  .badge-arrow{display:inline-block;margin-left:4px;font-size:1.2em;line-height:1;}
 </style>
 <!-- Google Analytics (GA4) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-FLRMWH8J9F"></script>
@@ -589,10 +595,10 @@ src="https://www.facebook.com/tr?id=982150121582233&ev=PageView&noscript=1"
     <div class="hero-copy">
       <h1 class="hero-title"><span class="hero-topic">太陽光・蓄電池</span>の見積もり、<br>契約する前に確認しませんか？</h1>
       <div class="badge-wrap">
-        <div class="badge-box">
+        <button type="button" class="badge-box" id="badgeCta" onclick="document.getElementById('apply').scrollIntoView({behavior:'smooth'})">
           <div class="small">見積書の写真1枚で</div>
-          <div class="big">1分でわかる！簡単AI診断</div>
-        </div>
+          <div class="big">1分でわかる！簡単AI診断 <span class="badge-arrow" aria-hidden="true">›</span></div>
+        </button>
         <div class="cta-callout">診断だけもOK！</div>
       </div>
       <p class="lead">その金額が相場より高くないか、容量・メーカーごとの<b>独自基準</b>でAIが無料で診断します。</p>
@@ -980,6 +986,7 @@ src="https://www.facebook.com/tr?id=982150121582233&ev=PageView&noscript=1"
     if(typeof gtag === 'function') gtag('event', gaName);
   }
   document.getElementById('heroCta').addEventListener('click', () => trackOnce('HeroCtaClick', 'hero_cta_click'));
+  document.getElementById('badgeCta').addEventListener('click', () => trackOnce('HeroCtaClick', 'hero_cta_click'));
   document.querySelector('.header-cta')?.addEventListener('click', () => trackOnce('HeaderCtaClick', 'header_cta_click'));
   if('IntersectionObserver' in window){
     const io = new IntersectionObserver((entries) => {
